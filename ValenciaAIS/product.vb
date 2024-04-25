@@ -122,7 +122,4 @@ Public Class product
 		End If
 	End Sub
 
-	Private Sub dgv_plist_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellContentClick
-
-	End Sub
 End Class

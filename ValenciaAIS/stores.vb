@@ -65,7 +65,6 @@ Public Class stores
 			Dim selectedRow = dgv_stlist.Rows(e.RowIndex)
 			txb_stID.Text = selectedRow.Cells(0).Value.ToString()
 			txb_stname.Text = selectedRow.Cells(1).Value.ToString()
-			' Update the following line according to your column indices in the DataGridView
 			Dim locationParts = selectedRow.Cells(2).Value.ToString().Split(","c)
 			If locationParts.Length = 2 Then
 				txb_stbarangay.Text = locationParts(0).Trim()
@@ -74,8 +73,8 @@ Public Class stores
 				txb_stbarangay.Text = ""
 				cbx_stmunicipality.Text = ""
 			End If
-			txb_stmanager.Text = selectedRow.Cells(3).Value.ToString()
-			txb_stcontact.Text = selectedRow.Cells(4).Value.ToString()
+			txb_stcontact.Text = selectedRow.Cells(3).Value.ToString()
+			txb_stmanager.Text = selectedRow.Cells(4).Value.ToString()
 		End If
 	End Sub
 

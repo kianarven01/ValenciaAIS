@@ -95,6 +95,7 @@ Partial Class product
 		dgv_plist.Location = New Point(109, 372)
 		dgv_plist.Name = "dgv_plist"
 		dgv_plist.ReadOnly = True
+		dgv_plist.RowHeadersVisible = False
 		dgv_plist.RowHeadersWidth = 51
 		dgv_plist.Size = New Size(1143, 226)
 		dgv_plist.TabIndex = 34

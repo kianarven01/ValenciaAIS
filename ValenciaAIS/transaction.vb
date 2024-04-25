@@ -74,8 +74,6 @@ Public Class transaction
 	End Sub
 
 
-
-
 	Private Sub txb_search_TextChanged(sender As Object, e As EventArgs) Handles txb_search.TextChanged
 		Dim connectionString As String = "server=localhost; user id=root; password=; database=valencia_agriculture"
 		Dim query As String = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
@@ -99,8 +97,6 @@ Public Class transaction
 		AddHandler storeForm.FormClosed, AddressOf StoreForm_FormClosed
 		storeForm.Show()
 	End Sub
-
-
 
 	Private Sub dgv_plist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellDoubleClick
 		' Check if a valid cell is clicked and it's not the header row
@@ -145,4 +141,26 @@ Public Class transaction
 		End If
 	End Sub
 
+	Private Sub btn_generate_Click(sender As Object, e As EventArgs) Handles btn_generate.Click
+		' Check if both ComboBoxes are not selected and the ListView is empty
+		If (cbx_stname.SelectedIndex = -1 AndAlso cbx_payment.SelectedIndex = -1) AndAlso lsv_transaction.Items.Count = 0 Then
+			MessageBox.Show("Please select a store, payment method, and add items to the transaction list before generating.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			Return
+		End If
+
+		' Check if at least one of the ComboBoxes is not selected
+		If cbx_stname.SelectedIndex = -1 OrElse cbx_payment.SelectedIndex = -1 Then
+			MessageBox.Show("Please select both a store and a payment method before generating.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			Return
+		End If
+
+		' Check if the ListView is empty
+		If lsv_transaction.Items.Count = 0 Then
+			MessageBox.Show("Please add items to the transaction list before generating.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			Return
+		End If
+
+		' Your code to generate the transaction goes here
+		' ...
+	End Sub
 End Class
