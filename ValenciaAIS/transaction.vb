@@ -163,4 +163,5 @@ Public Class transaction
 		' Your code to generate the transaction goes here
 		' ...
 	End Sub
+
 End Class
