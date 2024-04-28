@@ -44,13 +44,13 @@ Partial Class vehicle
 		txb_search = New TextBox()
 		Label2 = New Label()
 		btn_generate = New Button()
-		Button1 = New Button()
+		btn_remove_item = New Button()
 		TextBox1 = New TextBox()
-		DataGridViewTextBoxColumn1 = New DataGridViewTextBoxColumn()
-		DataGridViewTextBoxColumn2 = New DataGridViewTextBoxColumn()
-		DataGridViewTextBoxColumn3 = New DataGridViewTextBoxColumn()
-		DataGridViewTextBoxColumn4 = New DataGridViewTextBoxColumn()
-		DataGridViewTextBoxColumn5 = New DataGridViewTextBoxColumn()
+		loaded_productID = New DataGridViewTextBoxColumn()
+		prod_name = New DataGridViewTextBoxColumn()
+		prod_price = New DataGridViewTextBoxColumn()
+		loaded_stock = New DataGridViewTextBoxColumn()
+		prod_stock_format = New DataGridViewTextBoxColumn()
 		CType(dgv_plist, ComponentModel.ISupportInitialize).BeginInit()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
@@ -226,7 +226,7 @@ Partial Class vehicle
 		dgv_lplist.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 		dgv_lplist.BackgroundColor = Color.FromArgb(CByte(255), CByte(192), CByte(192))
 		dgv_lplist.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-		dgv_lplist.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn1, DataGridViewTextBoxColumn2, DataGridViewTextBoxColumn3, DataGridViewTextBoxColumn4, DataGridViewTextBoxColumn5})
+		dgv_lplist.Columns.AddRange(New DataGridViewColumn() {loaded_productID, prod_name, prod_price, loaded_stock, prod_stock_format})
 		dgv_lplist.Location = New Point(658, 494)
 		dgv_lplist.Name = "dgv_lplist"
 		dgv_lplist.ReadOnly = True
@@ -277,14 +277,14 @@ Partial Class vehicle
 		btn_generate.Text = "Load Product"
 		btn_generate.UseVisualStyleBackColor = True
 		' 
-		' Button1
+		' btn_remove_item
 		' 
-		Button1.Location = New Point(1185, 691)
-		Button1.Name = "Button1"
-		Button1.Size = New Size(110, 28)
-		Button1.TabIndex = 62
-		Button1.Text = "Remove Item"
-		Button1.UseVisualStyleBackColor = True
+		btn_remove_item.Location = New Point(1185, 691)
+		btn_remove_item.Name = "btn_remove_item"
+		btn_remove_item.Size = New Size(110, 28)
+		btn_remove_item.TabIndex = 62
+		btn_remove_item.Text = "Remove Item"
+		btn_remove_item.UseVisualStyleBackColor = True
 		' 
 		' TextBox1
 		' 
@@ -297,45 +297,45 @@ Partial Class vehicle
 		TextBox1.Size = New Size(406, 27)
 		TextBox1.TabIndex = 63
 		' 
-		' DataGridViewTextBoxColumn1
+		' loaded_productID
 		' 
-		DataGridViewTextBoxColumn1.DataPropertyName = "loaded_productID"
-		DataGridViewTextBoxColumn1.HeaderText = "Load Product ID"
-		DataGridViewTextBoxColumn1.MinimumWidth = 6
-		DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
-		DataGridViewTextBoxColumn1.ReadOnly = True
+		loaded_productID.DataPropertyName = "loaded_productID"
+		loaded_productID.HeaderText = "Load Product ID"
+		loaded_productID.MinimumWidth = 6
+		loaded_productID.Name = "loaded_productID"
+		loaded_productID.ReadOnly = True
 		' 
-		' DataGridViewTextBoxColumn2
+		' prod_name
 		' 
-		DataGridViewTextBoxColumn2.DataPropertyName = "prod_name"
-		DataGridViewTextBoxColumn2.HeaderText = "Product Name"
-		DataGridViewTextBoxColumn2.MinimumWidth = 6
-		DataGridViewTextBoxColumn2.Name = "DataGridViewTextBoxColumn2"
-		DataGridViewTextBoxColumn2.ReadOnly = True
+		prod_name.DataPropertyName = "prod_name"
+		prod_name.HeaderText = "Product Name"
+		prod_name.MinimumWidth = 6
+		prod_name.Name = "prod_name"
+		prod_name.ReadOnly = True
 		' 
-		' DataGridViewTextBoxColumn3
+		' prod_price
 		' 
-		DataGridViewTextBoxColumn3.DataPropertyName = "prod_price"
-		DataGridViewTextBoxColumn3.HeaderText = "Price"
-		DataGridViewTextBoxColumn3.MinimumWidth = 6
-		DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
-		DataGridViewTextBoxColumn3.ReadOnly = True
+		prod_price.DataPropertyName = "prod_price"
+		prod_price.HeaderText = "Price"
+		prod_price.MinimumWidth = 6
+		prod_price.Name = "prod_price"
+		prod_price.ReadOnly = True
 		' 
-		' DataGridViewTextBoxColumn4
+		' loaded_stock
 		' 
-		DataGridViewTextBoxColumn4.DataPropertyName = "loaded_stock"
-		DataGridViewTextBoxColumn4.HeaderText = "Loaded Stock"
-		DataGridViewTextBoxColumn4.MinimumWidth = 6
-		DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
-		DataGridViewTextBoxColumn4.ReadOnly = True
+		loaded_stock.DataPropertyName = "loaded_stock"
+		loaded_stock.HeaderText = "Loaded Stock"
+		loaded_stock.MinimumWidth = 6
+		loaded_stock.Name = "loaded_stock"
+		loaded_stock.ReadOnly = True
 		' 
-		' DataGridViewTextBoxColumn5
+		' prod_stock_format
 		' 
-		DataGridViewTextBoxColumn5.DataPropertyName = "prod_stock_format"
-		DataGridViewTextBoxColumn5.HeaderText = "Format"
-		DataGridViewTextBoxColumn5.MinimumWidth = 6
-		DataGridViewTextBoxColumn5.Name = "DataGridViewTextBoxColumn5"
-		DataGridViewTextBoxColumn5.ReadOnly = True
+		prod_stock_format.DataPropertyName = "prod_stock_format"
+		prod_stock_format.HeaderText = "Format"
+		prod_stock_format.MinimumWidth = 6
+		prod_stock_format.Name = "prod_stock_format"
+		prod_stock_format.ReadOnly = True
 		' 
 		' vehicle
 		' 
@@ -344,7 +344,7 @@ Partial Class vehicle
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
 		ClientSize = New Size(1354, 733)
 		Controls.Add(TextBox1)
-		Controls.Add(Button1)
+		Controls.Add(btn_remove_item)
 		Controls.Add(btn_generate)
 		Controls.Add(Label2)
 		Controls.Add(txb_search)
@@ -393,11 +393,11 @@ Partial Class vehicle
 	Friend WithEvents txb_search As TextBox
 	Friend WithEvents Label2 As Label
 	Friend WithEvents btn_generate As Button
-	Friend WithEvents Button1 As Button
+	Friend WithEvents btn_remove_item As Button
 	Friend WithEvents TextBox1 As TextBox
-	Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
-	Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
-	Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
-	Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
-	Friend WithEvents DataGridViewTextBoxColumn5 As DataGridViewTextBoxColumn
+	Friend WithEvents loaded_productID As DataGridViewTextBoxColumn
+	Friend WithEvents prod_name As DataGridViewTextBoxColumn
+	Friend WithEvents prod_price As DataGridViewTextBoxColumn
+	Friend WithEvents loaded_stock As DataGridViewTextBoxColumn
+	Friend WithEvents prod_stock_format As DataGridViewTextBoxColumn
 End Class
