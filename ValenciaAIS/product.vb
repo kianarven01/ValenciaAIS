@@ -86,16 +86,16 @@ Public Class product
 	End Sub
 
 	Private Sub txb_search_TextChanged(sender As Object, e As EventArgs) Handles txb_search.TextChanged
-		Dim connectionString As String = "server=localhost; user id=root; password=; database=valencia_agriculture"
-		Dim query As String = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
-		Dim keyword As String = "%" & txb_search.Text.Trim() & "%"
+		Dim connectionString = "server=localhost; user id=root; password=; database=valencia_agriculture"
+		Dim query = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
+		Dim keyword = "%" & txb_search.Text.Trim & "%"
 
 		Using connection As New MySqlConnection(connectionString)
 			Using command As New MySqlCommand(query, connection)
 				command.Parameters.AddWithValue("@Keyword", keyword)
-				connection.Open()
-				Using reader As MySqlDataReader = command.ExecuteReader()
-					Dim dt As New DataTable()
+				connection.Open
+				Using reader = command.ExecuteReader
+					Dim dt As New DataTable
 					dt.Load(reader)
 					dgv_plist.DataSource = dt
 				End Using
@@ -121,5 +121,7 @@ Public Class product
 			txb_pstock.SelectionStart = txb_pstock.Text.Length
 		End If
 	End Sub
+
+
 
 End Class

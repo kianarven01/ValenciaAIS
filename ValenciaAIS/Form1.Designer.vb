@@ -31,6 +31,7 @@ Partial Class Form1
 		Panel1 = New Panel()
 		btn_settings = New Button()
 		btn_logout = New Button()
+		btn_vehicle = New Button()
 		Panel1.SuspendLayout()
 		SuspendLayout()
 		' 
@@ -54,16 +55,16 @@ Partial Class Form1
 		' 
 		' btn_product
 		' 
-		btn_product.Location = New Point(12, 373)
+		btn_product.Location = New Point(12, 619)
 		btn_product.Name = "btn_product"
 		btn_product.Size = New Size(169, 117)
 		btn_product.TabIndex = 16
-		btn_product.Text = "Product"
+		btn_product.Text = "Product Inventory"
 		btn_product.UseVisualStyleBackColor = True
 		' 
 		' btn_stores
 		' 
-		btn_stores.Location = New Point(12, 496)
+		btn_stores.Location = New Point(12, 373)
 		btn_stores.Name = "btn_stores"
 		btn_stores.Size = New Size(169, 117)
 		btn_stores.TabIndex = 17
@@ -72,7 +73,7 @@ Partial Class Form1
 		' 
 		' btn_invoice
 		' 
-		btn_invoice.Location = New Point(12, 619)
+		btn_invoice.Location = New Point(12, 742)
 		btn_invoice.Name = "btn_invoice"
 		btn_invoice.Size = New Size(169, 117)
 		btn_invoice.TabIndex = 18
@@ -85,7 +86,7 @@ Partial Class Form1
 		mainpanel.BorderStyle = BorderStyle.FixedSingle
 		mainpanel.Location = New Point(196, 126)
 		mainpanel.Name = "mainpanel"
-		mainpanel.Size = New Size(1354, 610)
+		mainpanel.Size = New Size(1354, 733)
 		mainpanel.TabIndex = 19
 		' 
 		' Panel1
@@ -117,21 +118,31 @@ Partial Class Form1
 		btn_logout.Text = "Logout"
 		btn_logout.UseVisualStyleBackColor = True
 		' 
+		' btn_vehicle
+		' 
+		btn_vehicle.Location = New Point(12, 496)
+		btn_vehicle.Name = "btn_vehicle"
+		btn_vehicle.Size = New Size(169, 117)
+		btn_vehicle.TabIndex = 21
+		btn_vehicle.Text = "Load Products"
+		btn_vehicle.UseVisualStyleBackColor = True
+		' 
 		' Form1
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
-		ClientSize = New Size(1562, 748)
+		ClientSize = New Size(1562, 879)
+		Controls.Add(btn_stores)
+		Controls.Add(btn_invoice)
+		Controls.Add(btn_vehicle)
 		Controls.Add(Panel1)
 		Controls.Add(mainpanel)
-		Controls.Add(btn_invoice)
-		Controls.Add(btn_stores)
 		Controls.Add(btn_product)
 		Controls.Add(btn_supplier)
 		Controls.Add(btn_transaction)
 		Name = "Form1"
 		StartPosition = FormStartPosition.CenterScreen
-		Text = "Form1"
+		Text = "Valencia AIS"
 		Panel1.ResumeLayout(False)
 		ResumeLayout(False)
 	End Sub
@@ -145,5 +156,6 @@ Partial Class Form1
 	Friend WithEvents Panel1 As Panel
 	Friend WithEvents btn_logout As Button
 	Friend WithEvents btn_settings As Button
+	Friend WithEvents btn_vehicle As Button
 
 End Class

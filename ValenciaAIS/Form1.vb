@@ -64,6 +64,9 @@
 	Private Sub btn_product_Click(sender As Object, e As EventArgs) Handles btn_product.Click
 		childform(product)
 	End Sub
+	Private Sub btn_vehicle_Click(sender As Object, e As EventArgs) Handles btn_vehicle.Click
+		childform(vehicle)
+	End Sub
 	Private Sub btn_stores_Click(sender As Object, e As EventArgs) Handles btn_stores.Click
 		childform(stores)
 	End Sub

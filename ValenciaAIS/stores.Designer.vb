@@ -231,7 +231,7 @@ Partial Class stores
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
-		ClientSize = New Size(1354, 610)
+		ClientSize = New Size(1336, 686)
 		Controls.Add(txb_stcontact)
 		Controls.Add(Button1)
 		Controls.Add(txb_stbarangay)

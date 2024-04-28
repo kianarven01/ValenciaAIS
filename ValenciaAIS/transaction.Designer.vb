@@ -40,13 +40,15 @@ Partial Class transaction
 		lbl_payment = New Label()
 		cbx_payment = New ComboBox()
 		btn_stadd = New Button()
-		txb_date = New TextBox()
 		lbl_date = New Label()
 		TextBox1 = New TextBox()
 		lbl_total = New Label()
 		btn_addItem = New Button()
 		btn_generate = New Button()
 		btn_removeItem = New Button()
+		cbx_vehicle = New ComboBox()
+		lbl_vehicle = New Label()
+		DateTimePicker1 = New DateTimePicker()
 		CType(dgv_plist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
@@ -88,7 +90,7 @@ Partial Class transaction
 		dgv_plist.BackgroundColor = Color.FromArgb(CByte(192), CByte(255), CByte(192))
 		dgv_plist.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
 		dgv_plist.Columns.AddRange(New DataGridViewColumn() {Column1, prod_name, prod_price, prod_stock, prod_stock_format})
-		dgv_plist.Location = New Point(46, 294)
+		dgv_plist.Location = New Point(46, 284)
 		dgv_plist.Name = "dgv_plist"
 		dgv_plist.ReadOnly = True
 		dgv_plist.RowHeadersVisible = False
@@ -141,7 +143,7 @@ Partial Class transaction
 		txb_search.BackColor = Color.WhiteSmoke
 		txb_search.BorderStyle = BorderStyle.None
 		txb_search.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_search.Location = New Point(46, 261)
+		txb_search.Location = New Point(46, 251)
 		txb_search.Name = "txb_search"
 		txb_search.PlaceholderText = "Search Product"
 		txb_search.Size = New Size(302, 27)
@@ -152,9 +154,9 @@ Partial Class transaction
 		lsv_transaction.Columns.AddRange(New ColumnHeader() {ColumnHeader1, ColumnHeader2, ColumnHeader3, ColumnHeader4})
 		lsv_transaction.FullRowSelect = True
 		lsv_transaction.GridLines = True
-		lsv_transaction.Location = New Point(832, 97)
+		lsv_transaction.Location = New Point(836, 100)
 		lsv_transaction.Name = "lsv_transaction"
-		lsv_transaction.Size = New Size(453, 330)
+		lsv_transaction.Size = New Size(453, 343)
 		lsv_transaction.TabIndex = 39
 		lsv_transaction.UseCompatibleStateImageBehavior = False
 		lsv_transaction.View = View.Details
@@ -206,16 +208,6 @@ Partial Class transaction
 		btn_stadd.Text = "Insert New Store"
 		btn_stadd.UseVisualStyleBackColor = True
 		' 
-		' txb_date
-		' 
-		txb_date.BackColor = Color.WhiteSmoke
-		txb_date.BorderStyle = BorderStyle.None
-		txb_date.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_date.Location = New Point(170, 188)
-		txb_date.Name = "txb_date"
-		txb_date.Size = New Size(367, 27)
-		txb_date.TabIndex = 43
-		' 
 		' lbl_date
 		' 
 		lbl_date.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
@@ -232,7 +224,7 @@ Partial Class transaction
 		TextBox1.BackColor = Color.WhiteSmoke
 		TextBox1.BorderStyle = BorderStyle.None
 		TextBox1.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		TextBox1.Location = New Point(904, 496)
+		TextBox1.Location = New Point(908, 526)
 		TextBox1.Name = "TextBox1"
 		TextBox1.Size = New Size(160, 27)
 		TextBox1.TabIndex = 45
@@ -242,7 +234,7 @@ Partial Class transaction
 		lbl_total.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_total.AutoSize = True
 		lbl_total.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_total.Location = New Point(831, 494)
+		lbl_total.Location = New Point(835, 524)
 		lbl_total.Name = "lbl_total"
 		lbl_total.Size = New Size(67, 31)
 		lbl_total.TabIndex = 46
@@ -250,7 +242,7 @@ Partial Class transaction
 		' 
 		' btn_addItem
 		' 
-		btn_addItem.Location = New Point(653, 530)
+		btn_addItem.Location = New Point(653, 520)
 		btn_addItem.Name = "btn_addItem"
 		btn_addItem.Size = New Size(133, 28)
 		btn_addItem.TabIndex = 47
@@ -259,7 +251,7 @@ Partial Class transaction
 		' 
 		' btn_generate
 		' 
-		btn_generate.Location = New Point(1175, 433)
+		btn_generate.Location = New Point(1179, 463)
 		btn_generate.Name = "btn_generate"
 		btn_generate.Size = New Size(110, 28)
 		btn_generate.TabIndex = 48
@@ -268,26 +260,55 @@ Partial Class transaction
 		' 
 		' btn_removeItem
 		' 
-		btn_removeItem.Location = New Point(831, 433)
+		btn_removeItem.Location = New Point(835, 463)
 		btn_removeItem.Name = "btn_removeItem"
 		btn_removeItem.Size = New Size(110, 28)
 		btn_removeItem.TabIndex = 49
 		btn_removeItem.Text = "Remove Item"
 		btn_removeItem.UseVisualStyleBackColor = True
 		' 
+		' cbx_vehicle
+		' 
+		cbx_vehicle.FormattingEnabled = True
+		cbx_vehicle.Items.AddRange(New Object() {"Cash", "Gcash"})
+		cbx_vehicle.Location = New Point(543, 250)
+		cbx_vehicle.Name = "cbx_vehicle"
+		cbx_vehicle.Size = New Size(243, 28)
+		cbx_vehicle.TabIndex = 50
+		' 
+		' lbl_vehicle
+		' 
+		lbl_vehicle.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		lbl_vehicle.AutoSize = True
+		lbl_vehicle.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+		lbl_vehicle.Location = New Point(446, 249)
+		lbl_vehicle.Name = "lbl_vehicle"
+		lbl_vehicle.Size = New Size(91, 31)
+		lbl_vehicle.TabIndex = 51
+		lbl_vehicle.Text = "Vehicle"
+		' 
+		' DateTimePicker1
+		' 
+		DateTimePicker1.Location = New Point(170, 192)
+		DateTimePicker1.Name = "DateTimePicker1"
+		DateTimePicker1.Size = New Size(367, 27)
+		DateTimePicker1.TabIndex = 52
+		' 
 		' transaction
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
-		ClientSize = New Size(1336, 563)
+		ClientSize = New Size(1354, 733)
+		Controls.Add(DateTimePicker1)
+		Controls.Add(lbl_vehicle)
+		Controls.Add(cbx_vehicle)
 		Controls.Add(btn_removeItem)
 		Controls.Add(btn_generate)
 		Controls.Add(btn_addItem)
 		Controls.Add(lbl_total)
 		Controls.Add(TextBox1)
 		Controls.Add(lbl_date)
-		Controls.Add(txb_date)
 		Controls.Add(btn_stadd)
 		Controls.Add(lbl_payment)
 		Controls.Add(cbx_payment)
@@ -315,7 +336,6 @@ Partial Class transaction
 	Friend WithEvents lbl_payment As Label
 	Friend WithEvents cbx_payment As ComboBox
 	Friend WithEvents btn_stadd As Button
-	Friend WithEvents txb_date As TextBox
 	Friend WithEvents lbl_date As Label
 	Friend WithEvents TextBox1 As TextBox
 	Friend WithEvents lbl_total As Label
@@ -330,4 +350,7 @@ Partial Class transaction
 	Friend WithEvents prod_price As DataGridViewTextBoxColumn
 	Friend WithEvents prod_stock As DataGridViewTextBoxColumn
 	Friend WithEvents prod_stock_format As DataGridViewTextBoxColumn
+	Friend WithEvents cbx_vehicle As ComboBox
+	Friend WithEvents lbl_vehicle As Label
+	Friend WithEvents DateTimePicker1 As DateTimePicker
 End Class

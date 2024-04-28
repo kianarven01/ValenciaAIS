@@ -70,9 +70,9 @@ Partial Class product
 		lbl_poduct.Font = New Font("Segoe UI", 25.8000011F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
 		lbl_poduct.Location = New Point(109, 23)
 		lbl_poduct.Name = "lbl_poduct"
-		lbl_poduct.Size = New Size(452, 60)
+		lbl_poduct.Size = New Size(578, 60)
 		lbl_poduct.TabIndex = 33
-		lbl_poduct.Text = "Product Information"
+		lbl_poduct.Text = "Product Stock Information"
 		' 
 		' txb_pstock
 		' 

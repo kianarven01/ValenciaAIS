@@ -34,7 +34,7 @@ Module DBConnection
         End Try
     End Sub
 
-    Public Sub reload(ByVal sql As String, ByVal DTG As Object)
+    Public Sub reload(ByVal sql As String, ByVal DTG As DataGridView)
         Try
             If DTG Is Nothing Then
                 MessageBox.Show("Error: The DataGridView object is null.")
@@ -71,6 +71,7 @@ Module DBConnection
             End If
         End Try
     End Sub
+
 
 
     Public Sub updates(ByVal sql As String)
