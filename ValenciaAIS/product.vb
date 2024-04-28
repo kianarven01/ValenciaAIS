@@ -4,7 +4,8 @@
 Public Class product
 
 	Private isFormVisible As Boolean = False
-
+	Public Event ProductDataChanged As EventHandler
+	Private WithEvents vehicleForm As New vehicle()
 	Private Sub product_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		reload("SELECT * FROM product", dgv_plist)
 		txb_pID.Enabled = False
@@ -12,6 +13,12 @@ Public Class product
 		btn_delete.Enabled = (DBConnection.UserType = "admin")
 		cbx_pgroup.Enabled = False
 		cbx_pformat.SetPlaceholder("Select Format")
+		AddHandler vehicle.LoadedProductDataChanged, AddressOf LoadedProductDataChangedHandler
+	End Sub
+
+	Private Sub LoadedProductDataChangedHandler(ByVal sender As Object, ByVal e As EventArgs)
+		' Reload dgv_plist to reflect the changes
+		reload("SELECT * FROM product", dgv_plist)
 	End Sub
 
 	Private Sub product_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
@@ -53,15 +60,18 @@ Public Class product
 			MessageBox.Show(ex.Message)
 		End Try
 		reload("SELECT * FROM product", dgv_plist)
+		RaiseEvent ProductDataChanged(Me, EventArgs.Empty)
 	End Sub
 
 	Private Sub btn_update_Click(sender As Object, e As EventArgs) Handles btn_update.Click
 		Try
 			updates("UPDATE product SET prod_name='" & txb_pname.Text & "' ,prod_price='" & txb_pprice.Text & "' ,prod_stock='" & txb_pstock.Text & "',prod_stock_format='" & cbx_pformat.Text & "' WHERE productID = '" & txb_pID.Text & "'")
+
 		Catch ex As Exception
 			MessageBox.Show(ex.Message)
 		End Try
 		reload("SELECT * FROM product", dgv_plist)
+		RaiseEvent ProductDataChanged(Me, EventArgs.Empty)
 	End Sub
 
 	Private Sub dgv_plist_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellClick
@@ -83,6 +93,7 @@ Public Class product
 			MessageBox.Show(ex.Message)
 		End Try
 		reload("SELECT * FROM product", dgv_plist)
+		RaiseEvent ProductDataChanged(Me, EventArgs.Empty)
 	End Sub
 
 	Private Sub txb_search_TextChanged(sender As Object, e As EventArgs) Handles txb_search.TextChanged
