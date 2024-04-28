@@ -270,7 +270,6 @@ Partial Class transaction
 		' cbx_vehicle
 		' 
 		cbx_vehicle.FormattingEnabled = True
-		cbx_vehicle.Items.AddRange(New Object() {"Cash", "Gcash"})
 		cbx_vehicle.Location = New Point(543, 250)
 		cbx_vehicle.Name = "cbx_vehicle"
 		cbx_vehicle.Size = New Size(243, 28)
