@@ -40,17 +40,17 @@ Partial Class vehicle
 		Column5 = New DataGridViewTextBoxColumn()
 		DateTimePicker1 = New DateTimePicker()
 		dgv_lplist = New DataGridView()
+		loaded_productID = New DataGridViewTextBoxColumn()
+		prod_name = New DataGridViewTextBoxColumn()
+		prod_price = New DataGridViewTextBoxColumn()
+		loaded_stock = New DataGridViewTextBoxColumn()
+		prod_stock_format = New DataGridViewTextBoxColumn()
 		Label1 = New Label()
 		txb_search = New TextBox()
 		Label2 = New Label()
 		btn_generate = New Button()
 		btn_remove_item = New Button()
 		TextBox1 = New TextBox()
-		loaded_productID = New DataGridViewTextBoxColumn()
-		prod_name = New DataGridViewTextBoxColumn()
-		prod_price = New DataGridViewTextBoxColumn()
-		loaded_stock = New DataGridViewTextBoxColumn()
-		prod_stock_format = New DataGridViewTextBoxColumn()
 		CType(dgv_plist, ComponentModel.ISupportInitialize).BeginInit()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
@@ -169,6 +169,7 @@ Partial Class vehicle
 		dgv_plist.ReadOnly = True
 		dgv_plist.RowHeadersVisible = False
 		dgv_plist.RowHeadersWidth = 51
+		dgv_plist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
 		dgv_plist.Size = New Size(637, 191)
 		dgv_plist.TabIndex = 55
 		' 
@@ -232,8 +233,49 @@ Partial Class vehicle
 		dgv_lplist.ReadOnly = True
 		dgv_lplist.RowHeadersVisible = False
 		dgv_lplist.RowHeadersWidth = 51
+		dgv_lplist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
 		dgv_lplist.Size = New Size(637, 191)
 		dgv_lplist.TabIndex = 57
+		' 
+		' loaded_productID
+		' 
+		loaded_productID.DataPropertyName = "loaded_productID"
+		loaded_productID.HeaderText = "Load Product ID"
+		loaded_productID.MinimumWidth = 6
+		loaded_productID.Name = "loaded_productID"
+		loaded_productID.ReadOnly = True
+		' 
+		' prod_name
+		' 
+		prod_name.DataPropertyName = "prod_name"
+		prod_name.HeaderText = "Product Name"
+		prod_name.MinimumWidth = 6
+		prod_name.Name = "prod_name"
+		prod_name.ReadOnly = True
+		' 
+		' prod_price
+		' 
+		prod_price.DataPropertyName = "prod_price"
+		prod_price.HeaderText = "Price"
+		prod_price.MinimumWidth = 6
+		prod_price.Name = "prod_price"
+		prod_price.ReadOnly = True
+		' 
+		' loaded_stock
+		' 
+		loaded_stock.DataPropertyName = "loaded_stock"
+		loaded_stock.HeaderText = "Loaded Stock"
+		loaded_stock.MinimumWidth = 6
+		loaded_stock.Name = "loaded_stock"
+		loaded_stock.ReadOnly = True
+		' 
+		' prod_stock_format
+		' 
+		prod_stock_format.DataPropertyName = "prod_stock_format"
+		prod_stock_format.HeaderText = "Format"
+		prod_stock_format.MinimumWidth = 6
+		prod_stock_format.Name = "prod_stock_format"
+		prod_stock_format.ReadOnly = True
 		' 
 		' Label1
 		' 
@@ -296,46 +338,6 @@ Partial Class vehicle
 		TextBox1.PlaceholderText = "Search Here"
 		TextBox1.Size = New Size(406, 27)
 		TextBox1.TabIndex = 63
-		' 
-		' loaded_productID
-		' 
-		loaded_productID.DataPropertyName = "loaded_productID"
-		loaded_productID.HeaderText = "Load Product ID"
-		loaded_productID.MinimumWidth = 6
-		loaded_productID.Name = "loaded_productID"
-		loaded_productID.ReadOnly = True
-		' 
-		' prod_name
-		' 
-		prod_name.DataPropertyName = "prod_name"
-		prod_name.HeaderText = "Product Name"
-		prod_name.MinimumWidth = 6
-		prod_name.Name = "prod_name"
-		prod_name.ReadOnly = True
-		' 
-		' prod_price
-		' 
-		prod_price.DataPropertyName = "prod_price"
-		prod_price.HeaderText = "Price"
-		prod_price.MinimumWidth = 6
-		prod_price.Name = "prod_price"
-		prod_price.ReadOnly = True
-		' 
-		' loaded_stock
-		' 
-		loaded_stock.DataPropertyName = "loaded_stock"
-		loaded_stock.HeaderText = "Loaded Stock"
-		loaded_stock.MinimumWidth = 6
-		loaded_stock.Name = "loaded_stock"
-		loaded_stock.ReadOnly = True
-		' 
-		' prod_stock_format
-		' 
-		prod_stock_format.DataPropertyName = "prod_stock_format"
-		prod_stock_format.HeaderText = "Format"
-		prod_stock_format.MinimumWidth = 6
-		prod_stock_format.Name = "prod_stock_format"
-		prod_stock_format.ReadOnly = True
 		' 
 		' vehicle
 		' 

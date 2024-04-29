@@ -25,12 +25,6 @@ Partial Class transaction
 		lbl_transaction = New Label()
 		cbx_stname = New ComboBox()
 		lbl_store = New Label()
-		dgv_plist = New DataGridView()
-		Column1 = New DataGridViewTextBoxColumn()
-		prod_name = New DataGridViewTextBoxColumn()
-		prod_price = New DataGridViewTextBoxColumn()
-		prod_stock = New DataGridViewTextBoxColumn()
-		prod_stock_format = New DataGridViewTextBoxColumn()
 		txb_search = New TextBox()
 		lsv_transaction = New ListView()
 		ColumnHeader1 = New ColumnHeader()
@@ -49,7 +43,13 @@ Partial Class transaction
 		cbx_vehicle = New ComboBox()
 		lbl_vehicle = New Label()
 		DateTimePicker1 = New DateTimePicker()
-		CType(dgv_plist, ComponentModel.ISupportInitialize).BeginInit()
+		dgv_lplist = New DataGridView()
+		loaded_productID = New DataGridViewTextBoxColumn()
+		prod_name = New DataGridViewTextBoxColumn()
+		prod_price = New DataGridViewTextBoxColumn()
+		loaded_stock = New DataGridViewTextBoxColumn()
+		prod_stock_format = New DataGridViewTextBoxColumn()
+		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
 		' lbl_transaction
@@ -81,62 +81,6 @@ Partial Class transaction
 		lbl_store.Size = New Size(70, 31)
 		lbl_store.TabIndex = 25
 		lbl_store.Text = "Store"
-		' 
-		' dgv_plist
-		' 
-		dgv_plist.AllowUserToAddRows = False
-		dgv_plist.AllowUserToDeleteRows = False
-		dgv_plist.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-		dgv_plist.BackgroundColor = Color.FromArgb(CByte(192), CByte(255), CByte(192))
-		dgv_plist.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
-		dgv_plist.Columns.AddRange(New DataGridViewColumn() {Column1, prod_name, prod_price, prod_stock, prod_stock_format})
-		dgv_plist.Location = New Point(46, 284)
-		dgv_plist.Name = "dgv_plist"
-		dgv_plist.ReadOnly = True
-		dgv_plist.RowHeadersVisible = False
-		dgv_plist.RowHeadersWidth = 51
-		dgv_plist.Size = New Size(740, 230)
-		dgv_plist.TabIndex = 37
-		' 
-		' Column1
-		' 
-		Column1.DataPropertyName = "productID"
-		Column1.HeaderText = "Product ID"
-		Column1.MinimumWidth = 6
-		Column1.Name = "Column1"
-		Column1.ReadOnly = True
-		' 
-		' prod_name
-		' 
-		prod_name.DataPropertyName = "prod_name"
-		prod_name.HeaderText = "Product Name"
-		prod_name.MinimumWidth = 6
-		prod_name.Name = "prod_name"
-		prod_name.ReadOnly = True
-		' 
-		' prod_price
-		' 
-		prod_price.DataPropertyName = "prod_price"
-		prod_price.HeaderText = "Price"
-		prod_price.MinimumWidth = 6
-		prod_price.Name = "prod_price"
-		prod_price.ReadOnly = True
-		' 
-		' prod_stock
-		' 
-		prod_stock.DataPropertyName = "prod_stock"
-		prod_stock.HeaderText = "Stock"
-		prod_stock.MinimumWidth = 6
-		prod_stock.Name = "prod_stock"
-		prod_stock.ReadOnly = True
-		' 
-		' prod_stock_format
-		' 
-		prod_stock_format.DataPropertyName = "prod_stock_format"
-		prod_stock_format.HeaderText = "Format"
-		prod_stock_format.MinimumWidth = 6
-		prod_stock_format.Name = "prod_stock_format"
-		prod_stock_format.ReadOnly = True
 		' 
 		' txb_search
 		' 
@@ -293,12 +237,70 @@ Partial Class transaction
 		DateTimePicker1.Size = New Size(367, 27)
 		DateTimePicker1.TabIndex = 52
 		' 
+		' dgv_lplist
+		' 
+		dgv_lplist.AllowUserToAddRows = False
+		dgv_lplist.AllowUserToDeleteRows = False
+		dgv_lplist.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+		dgv_lplist.BackgroundColor = Color.FromArgb(CByte(255), CByte(192), CByte(192))
+		dgv_lplist.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+		dgv_lplist.Columns.AddRange(New DataGridViewColumn() {loaded_productID, prod_name, prod_price, loaded_stock, prod_stock_format})
+		dgv_lplist.Location = New Point(46, 300)
+		dgv_lplist.Name = "dgv_lplist"
+		dgv_lplist.ReadOnly = True
+		dgv_lplist.RowHeadersVisible = False
+		dgv_lplist.RowHeadersWidth = 51
+		dgv_lplist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
+		dgv_lplist.Size = New Size(740, 214)
+		dgv_lplist.TabIndex = 58
+		' 
+		' loaded_productID
+		' 
+		loaded_productID.DataPropertyName = "loaded_productID"
+		loaded_productID.HeaderText = "Load Product ID"
+		loaded_productID.MinimumWidth = 6
+		loaded_productID.Name = "loaded_productID"
+		loaded_productID.ReadOnly = True
+		' 
+		' prod_name
+		' 
+		prod_name.DataPropertyName = "prod_name"
+		prod_name.HeaderText = "Product Name"
+		prod_name.MinimumWidth = 6
+		prod_name.Name = "prod_name"
+		prod_name.ReadOnly = True
+		' 
+		' prod_price
+		' 
+		prod_price.DataPropertyName = "prod_price"
+		prod_price.HeaderText = "Price"
+		prod_price.MinimumWidth = 6
+		prod_price.Name = "prod_price"
+		prod_price.ReadOnly = True
+		' 
+		' loaded_stock
+		' 
+		loaded_stock.DataPropertyName = "loaded_stock"
+		loaded_stock.HeaderText = "Loaded Stock"
+		loaded_stock.MinimumWidth = 6
+		loaded_stock.Name = "loaded_stock"
+		loaded_stock.ReadOnly = True
+		' 
+		' prod_stock_format
+		' 
+		prod_stock_format.DataPropertyName = "prod_stock_format"
+		prod_stock_format.HeaderText = "Format"
+		prod_stock_format.MinimumWidth = 6
+		prod_stock_format.Name = "prod_stock_format"
+		prod_stock_format.ReadOnly = True
+		' 
 		' transaction
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
 		ClientSize = New Size(1354, 733)
+		Controls.Add(dgv_lplist)
 		Controls.Add(DateTimePicker1)
 		Controls.Add(lbl_vehicle)
 		Controls.Add(cbx_vehicle)
@@ -312,7 +314,6 @@ Partial Class transaction
 		Controls.Add(lbl_payment)
 		Controls.Add(cbx_payment)
 		Controls.Add(lsv_transaction)
-		Controls.Add(dgv_plist)
 		Controls.Add(txb_search)
 		Controls.Add(lbl_store)
 		Controls.Add(cbx_stname)
@@ -320,7 +321,7 @@ Partial Class transaction
 		FormBorderStyle = FormBorderStyle.None
 		Name = "transaction"
 		Text = "transaction"
-		CType(dgv_plist, ComponentModel.ISupportInitialize).EndInit()
+		CType(dgv_lplist, ComponentModel.ISupportInitialize).EndInit()
 		ResumeLayout(False)
 		PerformLayout()
 	End Sub
@@ -328,7 +329,6 @@ Partial Class transaction
 	Friend WithEvents lbl_transaction As Label
 	Friend WithEvents cbx_stname As ComboBox
 	Friend WithEvents lbl_store As Label
-	Friend WithEvents dgv_plist As DataGridView
 	Friend WithEvents txb_search As TextBox
 	Friend WithEvents lsv_transaction As ListView
 	Friend WithEvents ColumnHeader1 As ColumnHeader
@@ -344,12 +344,13 @@ Partial Class transaction
 	Friend WithEvents btn_addItem As Button
 	Friend WithEvents btn_generate As Button
 	Friend WithEvents btn_removeItem As Button
-	Friend WithEvents Column1 As DataGridViewTextBoxColumn
-	Friend WithEvents prod_name As DataGridViewTextBoxColumn
-	Friend WithEvents prod_price As DataGridViewTextBoxColumn
-	Friend WithEvents prod_stock As DataGridViewTextBoxColumn
-	Friend WithEvents prod_stock_format As DataGridViewTextBoxColumn
 	Friend WithEvents cbx_vehicle As ComboBox
 	Friend WithEvents lbl_vehicle As Label
 	Friend WithEvents DateTimePicker1 As DateTimePicker
+	Friend WithEvents dgv_lplist As DataGridView
+	Friend WithEvents loaded_productID As DataGridViewTextBoxColumn
+	Friend WithEvents prod_name As DataGridViewTextBoxColumn
+	Friend WithEvents prod_price As DataGridViewTextBoxColumn
+	Friend WithEvents loaded_stock As DataGridViewTextBoxColumn
+	Friend WithEvents prod_stock_format As DataGridViewTextBoxColumn
 End Class

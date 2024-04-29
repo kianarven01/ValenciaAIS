@@ -97,6 +97,7 @@ Partial Class product
 		dgv_plist.ReadOnly = True
 		dgv_plist.RowHeadersVisible = False
 		dgv_plist.RowHeadersWidth = 51
+		dgv_plist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
 		dgv_plist.Size = New Size(1143, 226)
 		dgv_plist.TabIndex = 34
 		' 

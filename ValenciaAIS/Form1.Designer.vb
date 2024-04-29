@@ -91,6 +91,7 @@ Partial Class Form1
 		' 
 		' Panel1
 		' 
+		Panel1.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		Panel1.BackColor = Color.FromArgb(CByte(255), CByte(192), CByte(255))
 		Panel1.BorderStyle = BorderStyle.Fixed3D
 		Panel1.Controls.Add(btn_settings)

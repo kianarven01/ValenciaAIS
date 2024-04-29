@@ -3,11 +3,13 @@ Imports MySql.Data.MySqlClient
 Public Class transaction
 	Private isFormVisible As Boolean = False
 	Private connectionString As String = "server=localhost; user id=root; password=; database=valencia_agriculture"
+
 	Public ReadOnly Property HasUnsavedItems As Boolean
 		Get
 			Return lsv_transaction.Items.Count > 0
 		End Get
 	End Property
+
 
 	Private Sub PopulateStoreComboBox()
 		Try
@@ -42,22 +44,29 @@ Public Class transaction
 	End Sub
 
 
-	Private Sub transaction_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-		reload("SELECT * FROM product", dgv_plist)
+
+
+	Private Sub transaction_Load(sender As Object, e As EventArgs)
+		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 		PopulateStoreComboBox() ' Call the method to populate the ComboBox with store names
 		cbx_stname.SetPlaceholder("Select Store")
-		Dim totalWidth As Integer = lsv_transaction.ClientSize.Width
-		Dim columnWidth As Integer = totalWidth \ lsv_transaction.Columns.Count
+		Dim totalWidth = lsv_transaction.ClientSize.Width
+		Dim columnWidth = totalWidth \ lsv_transaction.Columns.Count
 		For Each column As ColumnHeader In lsv_transaction.Columns
 			column.Width = columnWidth
 		Next
 		lsv_transaction.Columns(lsv_transaction.Columns.Count - 1).Width += totalWidth Mod lsv_transaction.Columns.Count
-
+		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 	End Sub
 
-	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
+	Private Sub ReloadTransactionData()
+		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
+	End Sub
+
+	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged, MyBase.Load
 		If Me.Visible Then
 			ClearFields()
+			ReloadTransactionData()
 		End If
 	End Sub
 
@@ -74,35 +83,12 @@ Public Class transaction
 	End Sub
 
 
-	Private Sub txb_search_TextChanged(sender As Object, e As EventArgs) Handles txb_search.TextChanged
-		Dim connectionString As String = "server=localhost; user id=root; password=; database=valencia_agriculture"
-		Dim query As String = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
-		Dim keyword As String = "%" & txb_search.Text.Trim() & "%"
 
-		Using connection As New MySqlConnection(connectionString)
-			Using command As New MySqlCommand(query, connection)
-				command.Parameters.AddWithValue("@Keyword", keyword)
-				connection.Open()
-				Using reader As MySqlDataReader = command.ExecuteReader()
-					Dim dt As New DataTable()
-					dt.Load(reader)
-					dgv_plist.DataSource = dt
-				End Using
-			End Using
-		End Using
-	End Sub
-
-	Private Sub btn_stadd_Click(sender As Object, e As EventArgs) Handles btn_stadd.Click
-		Dim storeForm As New stores()
-		AddHandler storeForm.FormClosed, AddressOf StoreForm_FormClosed
-		storeForm.Show()
-	End Sub
-
-	Private Sub dgv_plist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellDoubleClick
+	Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
 		' Check if a valid cell is clicked and it's not the header row
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
 			' Get the selected row
-			Dim selectedRow = dgv_plist.Rows(e.RowIndex)
+			Dim selectedRow = dgv_lplist.Rows(e.RowIndex)
 
 			' Extract the product information from the selected row
 			Dim productName As String = selectedRow.Cells("prod_name").Value.ToString()
@@ -123,6 +109,7 @@ Public Class transaction
 				lsv_transaction.Items.Add(item)
 			End If
 		End If
+		ReloadTransactionData()
 	End Sub
 
 	Private Sub btn_removeItem_Click(sender As Object, e As EventArgs) Handles btn_removeItem.Click
@@ -139,6 +126,12 @@ Public Class transaction
 			' Set placeholder text
 			cbx_stname.SetPlaceholder("Select Store")
 		End If
+	End Sub
+
+	Private Sub btn_stadd_Click(sender As Object, e As EventArgs) Handles btn_stadd.Click
+		Dim storeForm As New stores()
+		AddHandler storeForm.FormClosed, AddressOf StoreForm_FormClosed
+		storeForm.Show()
 	End Sub
 
 	Private Sub btn_generate_Click(sender As Object, e As EventArgs) Handles btn_generate.Click
