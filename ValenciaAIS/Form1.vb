@@ -20,7 +20,8 @@
 				If result = DialogResult.No Then
 					Return
 				Else
-					transactionForm.ClearItems()
+					' Revert the items in the transaction list to dgv_lplist values
+					transactionForm.RevertItems()
 				End If
 			End If
 		End If
@@ -34,6 +35,7 @@
 
 		currentChildForm = panel
 	End Sub
+
 
 
 	Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load

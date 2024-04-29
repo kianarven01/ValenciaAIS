@@ -10,6 +10,31 @@ Public Class transaction
 		End Get
 	End Property
 
+	Public Sub ExecuteNonQueryWithoutPrompt(ByVal sql As String)
+		Try
+			strcon.Open()
+			cmd.Connection = strcon
+			cmd.CommandText = sql
+			result = cmd.ExecuteNonQuery
+		Catch ex As Exception
+			MessageBox.Show(ex.Message)
+		Finally
+			strcon.Close()
+		End Try
+	End Sub
+
+	Public Sub ExecuteNonQueryWithoutPrompt(ByVal sql As String)
+		Try
+			strcon.Open()
+			cmd.Connection = strcon
+			cmd.CommandText = sql
+			result = cmd.ExecuteNonQuery
+		Catch ex As Exception
+			MessageBox.Show(ex.Message)
+		Finally
+			strcon.Close()
+		End Try
+	End Sub
 
 	Private Sub PopulateStoreComboBox()
 		Try
@@ -31,10 +56,10 @@ Public Class transaction
 				cbx_stname.Items.Add(row("store_name").ToString())
 			Next
 
-			' Set placeholder text
-			cbx_stname.SetPlaceholder("Select Store")
+	Private Sub transaction_Load(sender As Object, e As EventArgs)
+		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 		Catch ex As Exception
-			MessageBox.Show("Error loading store data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		MessageBox.Show("Error loading store data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End Try
 	End Sub
 
@@ -44,13 +69,16 @@ Public Class transaction
 	End Sub
 
 
-
-
 	Private Sub transaction_Load(sender As Object, e As EventArgs)
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 		PopulateStoreComboBox() ' Call the method to populate the ComboBox with store names
 		cbx_stname.SetPlaceholder("Select Store")
-		Dim totalWidth = lsv_transaction.ClientSize.Width
+
+	Private Sub ReloadTransactionData()
+		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
+	End Sub
+
+	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged, MyBase.Load
 		Dim columnWidth = totalWidth \ lsv_transaction.Columns.Count
 		For Each column As ColumnHeader In lsv_transaction.Columns
 			column.Width = columnWidth
@@ -63,10 +91,14 @@ Public Class transaction
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 	End Sub
 
+
+	Private Sub ReloadTransactionData()
+		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
+	End Sub
+
 	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged, MyBase.Load
 		If Me.Visible Then
-			ClearFields()
-			ReloadTransactionData()
+    Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
 		End If
 	End Sub
 
@@ -83,8 +115,30 @@ Public Class transaction
 	End Sub
 
 
-
 	Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
+		Dim query As String = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
+		Dim keyword As String = "%" & txb_search.Text.Trim() & "%"
+
+		Using connection As New MySqlConnection(connectionString)
+			Using command As New MySqlCommand(query, connection)
+				command.Parameters.AddWithValue("@Keyword", keyword)
+				connection.Open()
+				Using reader As MySqlDataReader = command.ExecuteReader()
+					Dim dt As New DataTable()
+					dt.Load(reader)
+					dgv_plist.DataSource = dt
+				End Using
+			End Using
+		End Using
+	End Sub
+
+	Private Sub btn_stadd_Click(sender As Object, e As EventArgs) Handles btn_stadd.Click
+		Dim storeForm As New stores()
+		AddHandler storeForm.FormClosed, AddressOf StoreForm_FormClosed
+		storeForm.Show()
+	End Sub
+
+	Private Sub dgv_plist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellDoubleClick
 		' Check if a valid cell is clicked and it's not the header row
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
 			' Get the selected row
@@ -94,6 +148,8 @@ Public Class transaction
 			Dim productName As String = selectedRow.Cells("prod_name").Value.ToString()
 			Dim price As String = selectedRow.Cells("prod_price").Value.ToString()
 			Dim format As String = selectedRow.Cells("prod_stock_format").Value.ToString()
+			Dim loadedProductId As Integer = Convert.ToInt32(selectedRow.Cells("loaded_productID").Value)
+			Dim loadedStock As Integer = Convert.ToInt32(selectedRow.Cells("loaded_stock").Value)
 
 			' Open a popup window to input the quantity
 			Dim quantityInputForm As New QuantityInputForm()
@@ -101,24 +157,88 @@ Public Class transaction
 				' Retrieve the quantity from the popup window
 				Dim quantity As Integer = quantityInputForm.Quantity
 
-				' Add the selected product information along with the quantity to the ListView
-				Dim item As New ListViewItem(productName)
-				item.SubItems.Add(quantity.ToString())
-				item.SubItems.Add(format)
-				item.SubItems.Add(price)
-				lsv_transaction.Items.Add(item)
+				' Deduct the quantity from the loaded stock in the loaded_product table
+				Dim queryDeductStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock - {quantity} WHERE loaded_productID = {loadedProductId}"
+				ExecuteNonQueryWithoutPrompt(queryDeductStock)
+
+				' Check if an item with the same product name already exists in lsv_transaction
+				Dim existingItem As ListViewItem = lsv_transaction.FindItemWithText(productName)
+				If existingItem IsNot Nothing Then
+					' Update the quantity of the existing item
+					Dim currentQuantity As Integer = Convert.ToInt32(existingItem.SubItems(1).Text)
+					existingItem.SubItems(1).Text = (currentQuantity + quantity).ToString()
+				Else
+					' Add the selected product information along with the quantity to the ListView
+					Dim item As New ListViewItem(productName)
+					item.SubItems.Add(quantity.ToString())
+					item.SubItems.Add(format)
+					item.SubItems.Add(price)
+					lsv_transaction.Items.Add(item)
+				End If
+
+				' Reload dgv_lplist to reflect the changes
+				ReloadTransactionData()
 			End If
 		End If
 		ReloadTransactionData()
 	End Sub
 
+
 	Private Sub btn_removeItem_Click(sender As Object, e As EventArgs) Handles btn_removeItem.Click
 		If lsv_transaction.SelectedItems.Count > 0 Then
-			lsv_transaction.Items.Remove(lsv_transaction.SelectedItems(0))
+			' Get the selected item in lsv_transaction
+			Dim selectedItem As ListViewItem = lsv_transaction.SelectedItems(0)
+			Dim productName As String = selectedItem.SubItems(0).Text
+			Dim quantity As Integer = Convert.ToInt32(selectedItem.SubItems(1).Text)
+			Dim format As String = selectedItem.SubItems(2).Text
+			Dim price As Decimal = Convert.ToDecimal(selectedItem.SubItems(3).Text)
+
+			' Find the corresponding row in dgv_lplist
+			For Each row As DataGridViewRow In dgv_lplist.Rows
+				If productName = row.Cells("prod_name").Value.ToString() Then
+					' Update the loaded stock in the loaded_product table
+					Dim loadedProductId As Integer = Convert.ToInt32(row.Cells("loaded_productID").Value)
+					Dim queryAddStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE loaded_productID = {loadedProductId}"
+					ExecuteNonQueryWithoutPrompt(queryAddStock)
+					Exit For
+				End If
+			Next
+
+			' Remove the item from lsv_transaction
+			lsv_transaction.Items.Remove(selectedItem)
+
+			' Reload dgv_lplist to reflect the changes
+			ReloadTransactionData()
 		Else
 			MessageBox.Show("Please select an item to remove.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
 		End If
 	End Sub
+
+	Public Sub RevertItems()
+		' Iterate through the items in the transaction list
+		For Each item As ListViewItem In lsv_transaction.Items
+			Dim productName As String = item.SubItems(0).Text
+			Dim quantity As Integer = Convert.ToInt32(item.SubItems(1).Text)
+
+			' Find the corresponding row in dgv_lplist
+			For Each row As DataGridViewRow In dgv_lplist.Rows
+				If productName = row.Cells("prod_name").Value.ToString() Then
+					' Update the loaded stock in the loaded_product table
+					Dim loadedProductId As Integer = Convert.ToInt32(row.Cells("loaded_productID").Value)
+					Dim queryAddStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE loaded_productID = {loadedProductId}"
+					ExecuteNonQueryWithoutPrompt(queryAddStock)
+					Exit For
+				End If
+			Next
+		Next
+
+		' Clear the items in the transaction list
+		ClearItems()
+
+		' Reload dgv_lplist to reflect the changes
+		ReloadTransactionData()
+	End Sub
+
 
 	Private Sub cbx_stname_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbx_stname.SelectedIndexChanged
 		' Check if the selected index is -1 (no selection)

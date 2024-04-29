@@ -87,7 +87,7 @@ Partial Class transaction
 		txb_search.BackColor = Color.WhiteSmoke
 		txb_search.BorderStyle = BorderStyle.None
 		txb_search.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_search.Location = New Point(46, 251)
+		txb_search.Location = New Point(46, 267)
 		txb_search.Name = "txb_search"
 		txb_search.PlaceholderText = "Search Product"
 		txb_search.Size = New Size(302, 27)
@@ -214,7 +214,7 @@ Partial Class transaction
 		' cbx_vehicle
 		' 
 		cbx_vehicle.FormattingEnabled = True
-		cbx_vehicle.Location = New Point(543, 250)
+		cbx_vehicle.Location = New Point(543, 266)
 		cbx_vehicle.Name = "cbx_vehicle"
 		cbx_vehicle.Size = New Size(243, 28)
 		cbx_vehicle.TabIndex = 50
@@ -224,7 +224,7 @@ Partial Class transaction
 		lbl_vehicle.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_vehicle.AutoSize = True
 		lbl_vehicle.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_vehicle.Location = New Point(446, 249)
+		lbl_vehicle.Location = New Point(446, 265)
 		lbl_vehicle.Name = "lbl_vehicle"
 		lbl_vehicle.Size = New Size(91, 31)
 		lbl_vehicle.TabIndex = 51
