@@ -1,5 +1,6 @@
 ﻿Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports MySql.Data.MySqlClient
+
 Public Class transaction
 	Private isFormVisible As Boolean = False
 	Private connectionString As String = "server=localhost; user id=root; password=; database=valencia_agriculture"
