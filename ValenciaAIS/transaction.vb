@@ -24,19 +24,6 @@ Public Class transaction
 		End Try
 	End Sub
 
-	Public Sub ExecuteNonQueryWithoutPrompt(ByVal sql As String)
-		Try
-			strcon.Open()
-			cmd.Connection = strcon
-			cmd.CommandText = sql
-			result = cmd.ExecuteNonQuery
-		Catch ex As Exception
-			MessageBox.Show(ex.Message)
-		Finally
-			strcon.Close()
-		End Try
-	End Sub
-
 	Private Sub PopulateStoreComboBox()
 		Try
 			Dim query As String = "SELECT store_name FROM store"
@@ -57,10 +44,10 @@ Public Class transaction
 				cbx_stname.Items.Add(row("store_name").ToString())
 			Next
 
-	Private Sub transaction_Load(sender As Object, e As EventArgs)
-		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
+			' Set placeholder text
+			cbx_stname.SetPlaceholder("Select Store")
 		Catch ex As Exception
-		MessageBox.Show("Error loading store data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			MessageBox.Show("Error loading store data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End Try
 	End Sub
 
@@ -74,22 +61,13 @@ Public Class transaction
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 		PopulateStoreComboBox() ' Call the method to populate the ComboBox with store names
 		cbx_stname.SetPlaceholder("Select Store")
-
-	Private Sub ReloadTransactionData()
-		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
-	End Sub
-
-	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged, MyBase.Load
+		Dim totalWidth = lsv_transaction.ClientSize.Width
 		Dim columnWidth = totalWidth \ lsv_transaction.Columns.Count
 		For Each column As ColumnHeader In lsv_transaction.Columns
 			column.Width = columnWidth
 		Next
 		lsv_transaction.Columns(lsv_transaction.Columns.Count - 1).Width += totalWidth Mod lsv_transaction.Columns.Count
-		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
-	End Sub
 
-	Private Sub ReloadTransactionData()
-		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 	End Sub
 
 
@@ -99,7 +77,8 @@ Public Class transaction
 
 	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged, MyBase.Load
 		If Me.Visible Then
-    Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
+			ClearFields()
+			ReloadTransactionData()
 		End If
 	End Sub
 
@@ -117,29 +96,6 @@ Public Class transaction
 
 
 	Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
-		Dim query As String = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
-		Dim keyword As String = "%" & txb_search.Text.Trim() & "%"
-
-		Using connection As New MySqlConnection(connectionString)
-			Using command As New MySqlCommand(query, connection)
-				command.Parameters.AddWithValue("@Keyword", keyword)
-				connection.Open()
-				Using reader As MySqlDataReader = command.ExecuteReader()
-					Dim dt As New DataTable()
-					dt.Load(reader)
-					dgv_plist.DataSource = dt
-				End Using
-			End Using
-		End Using
-	End Sub
-
-	Private Sub btn_stadd_Click(sender As Object, e As EventArgs) Handles btn_stadd.Click
-		Dim storeForm As New stores()
-		AddHandler storeForm.FormClosed, AddressOf StoreForm_FormClosed
-		storeForm.Show()
-	End Sub
-
-	Private Sub dgv_plist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellDoubleClick
 		' Check if a valid cell is clicked and it's not the header row
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
 			' Get the selected row
@@ -181,7 +137,6 @@ Public Class transaction
 				ReloadTransactionData()
 			End If
 		End If
-		ReloadTransactionData()
 	End Sub
 
 
