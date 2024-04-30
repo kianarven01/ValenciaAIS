@@ -80,9 +80,9 @@ Partial Class vehicle
 		' cbx_vehicle
 		' 
 		cbx_vehicle.FormattingEnabled = True
-		cbx_vehicle.Location = New Point(130, 654)
+		cbx_vehicle.Location = New Point(1103, 460)
 		cbx_vehicle.Name = "cbx_vehicle"
-		cbx_vehicle.Size = New Size(175, 28)
+		cbx_vehicle.Size = New Size(192, 28)
 		cbx_vehicle.TabIndex = 37
 		' 
 		' lbl_vehicle1
@@ -329,7 +329,7 @@ Partial Class vehicle
 		TextBox1.Location = New Point(658, 461)
 		TextBox1.Name = "TextBox1"
 		TextBox1.PlaceholderText = "Search Here"
-		TextBox1.Size = New Size(406, 27)
+		TextBox1.Size = New Size(268, 27)
 		TextBox1.TabIndex = 63
 		' 
 		' btn_new
@@ -433,7 +433,7 @@ Partial Class vehicle
 		Label3.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		Label3.AutoSize = True
 		Label3.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		Label3.Location = New Point(33, 654)
+		Label3.Location = New Point(1006, 457)
 		Label3.Name = "Label3"
 		Label3.Size = New Size(91, 31)
 		Label3.TabIndex = 70

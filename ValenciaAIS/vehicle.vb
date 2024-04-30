@@ -1,5 +1,8 @@
-﻿Public Class vehicle
+﻿Imports MySql.Data.MySqlClient
+
+Public Class vehicle
 	Public Event LoadedProductDataChanged As EventHandler
+	Private loadingVehicleCodes As Boolean = False
 	Private Sub ExecuteNonQueryWithoutPrompt(ByVal sql As String)
 		Try
 			strcon.Open()
@@ -16,12 +19,19 @@
 	Private Sub vehicle_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		AddHandler product.ProductDataChanged, AddressOf ProductDataChangedHandler
 		txb_vhcode.Enabled = False
+		LoadVehicleCodes()
 		' Load data into dgv_plist from product table
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 		reload("SELECT * FROM product", dgv_plist)
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 
+	End Sub
 
+	Private Sub vehicle_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
+		If Me.Visible Then
+			' Clear the fields when the form becomes visible
+			ClearFields()
+		End If
 	End Sub
 
 	Private Sub ProductDataChangedHandler(ByVal sender As Object, ByVal e As EventArgs)
@@ -233,9 +243,6 @@
 		End If
 	End Sub
 
-
-
-
 	Private Sub btn_delete_Click(sender As Object, e As EventArgs) Handles btn_delete.Click
 		Try
 			delete("DELETE FROM vehicle WHERE vehicle_code ='" & txb_vhcode.Text & "' ")
@@ -244,5 +251,80 @@
 		End Try
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 	End Sub
+
+	Private Sub LoadVehicleCodes()
+		' Set flag to indicate ComboBox population
+		loadingVehicleCodes = True
+
+		' SQL query to fetch vehicle codes
+		Dim query As String = "SELECT vehicle_code FROM vehicle"
+
+		Try
+			' Open connection
+			strcon.Open()
+
+			' Set up command
+			cmd.Connection = strcon
+			cmd.CommandText = query
+
+			' Execute command and fetch data
+			Dim reader As MySqlDataReader = cmd.ExecuteReader()
+			While reader.Read()
+				' Add each vehicle code to the ComboBox
+				cbx_vehicle.Items.Add(reader("vehicle_code").ToString())
+			End While
+		Catch ex As Exception
+			MessageBox.Show(ex.Message)
+		Finally
+			' Close connection
+			strcon.Close()
+		End Try
+
+		' Set DisplayMember and ValueMember properties
+		cbx_vehicle.DisplayMember = "vehicle_code"
+		cbx_vehicle.ValueMember = "vehicle_code"
+
+		' Reset flag after populating ComboBox
+		loadingVehicleCodes = False
+	End Sub
+
+
+	Private Sub cbx_vehicle_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbx_vehicle.SelectedIndexChanged
+		If cbx_vehicle.SelectedValue IsNot Nothing Then
+			Dim selectedVehicleCode As String = cbx_vehicle.SelectedValue.ToString()
+			' Now you can use selectedVehicleCode safely
+			' Fetch the details of the selected vehicle from the database
+			Dim query As String = $"SELECT make, model, plate FROM vehicle WHERE vehicle_code = '{selectedVehicleCode}'"
+
+			Try
+				' Open connection
+				strcon.Open()
+
+				' Set up command
+				cmd.Connection = strcon
+				cmd.CommandText = query
+
+				' Execute command and fetch data
+				Dim reader As MySqlDataReader = cmd.ExecuteReader()
+				If reader.Read() Then
+					' Populate the textboxes with the fetched data
+					txb_make.Text = reader("make").ToString()
+					txb_model.Text = reader("model").ToString()
+					txb_plate.Text = reader("plate").ToString()
+				Else
+					' If no data found for the selected vehicle code, clear textboxes
+					txb_make.Clear()
+					txb_model.Clear()
+					txb_plate.Clear()
+				End If
+			Catch ex As Exception
+				MessageBox.Show(ex.Message)
+			Finally
+				' Close connection
+				strcon.Close()
+			End Try
+		End If
+	End Sub
+
 
 End Class
