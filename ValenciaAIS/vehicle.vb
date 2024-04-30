@@ -1,6 +1,5 @@
 ﻿Public Class vehicle
 	Public Event LoadedProductDataChanged As EventHandler
-	Private selectedVehicleCode As String
 	Private Sub ExecuteNonQueryWithoutPrompt(ByVal sql As String)
 		Try
 			strcon.Open()
@@ -16,6 +15,7 @@
 
 	Private Sub vehicle_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		AddHandler product.ProductDataChanged, AddressOf ProductDataChangedHandler
+		txb_vhcode.Enabled = False
 		' Load data into dgv_plist from product table
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 		reload("SELECT * FROM product", dgv_plist)
@@ -150,40 +150,19 @@
 	End Sub
 
 	Private Sub btn_create_Click(sender As Object, e As EventArgs) Handles btn_create.Click
-		If String.IsNullOrWhiteSpace(txb_vhcode.Text) OrElse
-		String.IsNullOrWhiteSpace(txb_make.Text) OrElse
+		If String.IsNullOrWhiteSpace(txb_make.Text) OrElse
 	   String.IsNullOrWhiteSpace(txb_model.Text) OrElse
 	   String.IsNullOrWhiteSpace(txb_plate.Text) Then
 			MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 			Return
 		End If
 
+		' Generate a new vehicle code
+		Dim newVehicleCode As String = GenerateNextVehicleCode()
+
 		' Proceed with data creation
 		Try
-			create("INSERT INTO vehicle (vehicle_code, make, model, plate) VALUES ('" & txb_vhcode.Text & "', '" & txb_make.Text & "','" & txb_model.Text & "', '" & txb_plate.Text & "') ")
-		Catch ex As Exception
-			MessageBox.Show(ex.Message)
-		End Try
-		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
-	End Sub
-
-	Private Sub btn_update_Click(sender As Object, e As EventArgs) Handles btn_update.Click
-		Try
-			' Retrieve vehicleID based on the provided vehicle_code
-			Dim vehicleID As Integer = GetVehicleIDByCode(txb_vhcode.Text)
-
-			' If vehicleID is found, check if the vehicle_code has been changed
-			If vehicleID <> -1 Then
-				' Check if the vehicle_code has been changed
-				If txb_vhcode.Text <> selectedVehicleCode Then
-					MessageBox.Show("Cannot update Vehicle Code. Please update the vehicle details using the correct Vehicle Code.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-				Else
-					' Proceed with updating other details
-					updates("UPDATE vehicle SET make='" & txb_make.Text & "', model='" & txb_model.Text & "', plate='" & txb_plate.Text & "' WHERE vehicleID = '" & vehicleID & "'")
-				End If
-			Else
-				MessageBox.Show("Vehicle not found for the provided vehicle code.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-			End If
+			create("INSERT INTO vehicle (vehicle_code, make, model, plate) VALUES ('" & newVehicleCode & "', '" & txb_make.Text & "','" & txb_model.Text & "', '" & txb_plate.Text & "') ")
 		Catch ex As Exception
 			MessageBox.Show(ex.Message)
 		End Try
@@ -192,32 +171,61 @@
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 	End Sub
 
-
-
-	Private Function GetVehicleIDByCode(ByVal vehicleCode As String) As Integer
-		Dim vehicleID As Integer = -1 ' Default value if vehicle not found
+	Private Function GenerateNextVehicleCode() As String
+		' Retrieve the maximum existing vehicle code
+		Dim maxVehicleCode As String = ""
 		Try
-			' Perform a query to retrieve vehicleID based on vehicle_code
-			Dim query As String = $"SELECT vehicleID FROM vehicle WHERE vehicle_code = '{vehicleCode}'"
 			strcon.Open()
 			cmd.Connection = strcon
-			cmd.CommandText = query
+			cmd.CommandText = "SELECT MAX(vehicle_code) FROM vehicle"
 			Dim result As Object = cmd.ExecuteScalar()
 			If result IsNot Nothing AndAlso Not DBNull.Value.Equals(result) Then
-				vehicleID = Convert.ToInt32(result)
+				maxVehicleCode = Convert.ToString(result)
 			End If
 		Catch ex As Exception
 			Throw
 		Finally
 			strcon.Close()
 		End Try
-		Return vehicleID
+
+		' Extract the numeric part of the maximum vehicle code
+		Dim numericPart As Integer = 0
+		If Not String.IsNullOrEmpty(maxVehicleCode) AndAlso maxVehicleCode.StartsWith("VHC") AndAlso Integer.TryParse(maxVehicleCode.Substring(3), numericPart) Then
+			numericPart += 1 ' Increment the numeric part
+		Else
+			' Set the initial numeric part if no existing vehicle code is found
+			numericPart = 1
+		End If
+
+		' Generate the new vehicle code
+		Return "VHC" & numericPart.ToString().PadLeft(3, "0"c) ' e.g., VHC001, VHC002, ...
 	End Function
+
+	Private Sub btn_update_Click(sender As Object, e As EventArgs) Handles btn_update.Click
+		Try
+			' Check if all required fields are filled
+			If String.IsNullOrWhiteSpace(txb_make.Text) OrElse
+		   String.IsNullOrWhiteSpace(txb_model.Text) OrElse
+		   String.IsNullOrWhiteSpace(txb_plate.Text) Then
+				MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+				Return
+			End If
+
+			' Proceed with updating the record
+			updates("UPDATE vehicle SET make='" & txb_make.Text & "', model='" & txb_model.Text & "', plate='" & txb_plate.Text & "' WHERE vehicle_code = '" & txb_vhcode.Text & "'")
+
+			' Reload the vehicle list
+			reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
+		Catch ex As Exception
+			' If an error occurs during the update, show an error message
+			MessageBox.Show("Failed to update record: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		End Try
+	End Sub
+
 
 	Private Sub dgv_vlist_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_vlist.CellClick
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
 			Dim selectedRow = dgv_vlist.Rows(e.RowIndex)
-			selectedVehicleCode = txb_vhcode.Text ' Store the original vehicle_code
 			txb_vhcode.Text = selectedRow.Cells(0).Value.ToString()
 			txb_make.Text = selectedRow.Cells(1).Value.ToString()
 			txb_model.Text = selectedRow.Cells(2).Value.ToString()
