@@ -26,29 +26,29 @@ Partial Class transaction
 		cbx_stname = New ComboBox()
 		lbl_store = New Label()
 		txb_search = New TextBox()
-		lsv_transaction = New ListView()
-		ColumnHeader1 = New ColumnHeader()
-		ColumnHeader2 = New ColumnHeader()
-		ColumnHeader3 = New ColumnHeader()
-		ColumnHeader4 = New ColumnHeader()
 		lbl_payment = New Label()
 		cbx_payment = New ComboBox()
 		btn_stadd = New Button()
 		lbl_date = New Label()
-		TextBox1 = New TextBox()
+		txb_total = New TextBox()
 		lbl_total = New Label()
 		btn_addItem = New Button()
 		btn_generate = New Button()
 		btn_removeItem = New Button()
 		cbx_vehicle = New ComboBox()
 		lbl_vehicle = New Label()
-		DateTimePicker1 = New DateTimePicker()
 		dgv_lplist = New DataGridView()
 		loaded_productID = New DataGridViewTextBoxColumn()
 		prod_name = New DataGridViewTextBoxColumn()
 		prod_price = New DataGridViewTextBoxColumn()
 		loaded_stock = New DataGridViewTextBoxColumn()
 		prod_stock_format = New DataGridViewTextBoxColumn()
+		ColumnHeader1 = New ColumnHeader()
+		ColumnHeader2 = New ColumnHeader()
+		ColumnHeader3 = New ColumnHeader()
+		ColumnHeader4 = New ColumnHeader()
+		lsv_transaction = New ListView()
+		DateTimePicker1 = New DateTimePicker()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
@@ -93,36 +93,6 @@ Partial Class transaction
 		txb_search.Size = New Size(302, 27)
 		txb_search.TabIndex = 38
 		' 
-		' lsv_transaction
-		' 
-		lsv_transaction.Columns.AddRange(New ColumnHeader() {ColumnHeader1, ColumnHeader2, ColumnHeader3, ColumnHeader4})
-		lsv_transaction.FullRowSelect = True
-		lsv_transaction.GridLines = True
-		lsv_transaction.Location = New Point(836, 100)
-		lsv_transaction.Name = "lsv_transaction"
-		lsv_transaction.Size = New Size(453, 343)
-		lsv_transaction.TabIndex = 39
-		lsv_transaction.UseCompatibleStateImageBehavior = False
-		lsv_transaction.View = View.Details
-		' 
-		' ColumnHeader1
-		' 
-		ColumnHeader1.Text = "Product"
-		ColumnHeader1.Width = 80
-		' 
-		' ColumnHeader2
-		' 
-		ColumnHeader2.Text = "Quantity"
-		ColumnHeader2.Width = 80
-		' 
-		' ColumnHeader3
-		' 
-		ColumnHeader3.Text = "Format"
-		' 
-		' ColumnHeader4
-		' 
-		ColumnHeader4.Text = "Price"
-		' 
 		' lbl_payment
 		' 
 		lbl_payment.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
@@ -163,15 +133,15 @@ Partial Class transaction
 		lbl_date.TabIndex = 44
 		lbl_date.Text = "Date"
 		' 
-		' TextBox1
+		' txb_total
 		' 
-		TextBox1.BackColor = Color.WhiteSmoke
-		TextBox1.BorderStyle = BorderStyle.None
-		TextBox1.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		TextBox1.Location = New Point(908, 526)
-		TextBox1.Name = "TextBox1"
-		TextBox1.Size = New Size(160, 27)
-		TextBox1.TabIndex = 45
+		txb_total.BackColor = Color.WhiteSmoke
+		txb_total.BorderStyle = BorderStyle.None
+		txb_total.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+		txb_total.Location = New Point(908, 526)
+		txb_total.Name = "txb_total"
+		txb_total.Size = New Size(160, 27)
+		txb_total.TabIndex = 45
 		' 
 		' lbl_total
 		' 
@@ -195,7 +165,7 @@ Partial Class transaction
 		' 
 		' btn_generate
 		' 
-		btn_generate.Location = New Point(1179, 463)
+		btn_generate.Location = New Point(1162, 463)
 		btn_generate.Name = "btn_generate"
 		btn_generate.Size = New Size(110, 28)
 		btn_generate.TabIndex = 48
@@ -229,13 +199,6 @@ Partial Class transaction
 		lbl_vehicle.Size = New Size(91, 31)
 		lbl_vehicle.TabIndex = 51
 		lbl_vehicle.Text = "Vehicle"
-		' 
-		' DateTimePicker1
-		' 
-		DateTimePicker1.Location = New Point(170, 192)
-		DateTimePicker1.Name = "DateTimePicker1"
-		DateTimePicker1.Size = New Size(367, 27)
-		DateTimePicker1.TabIndex = 52
 		' 
 		' dgv_lplist
 		' 
@@ -294,6 +257,43 @@ Partial Class transaction
 		prod_stock_format.Name = "prod_stock_format"
 		prod_stock_format.ReadOnly = True
 		' 
+		' ColumnHeader1
+		' 
+		ColumnHeader1.Text = "Product"
+		ColumnHeader1.Width = 80
+		' 
+		' ColumnHeader2
+		' 
+		ColumnHeader2.Text = "Quantity"
+		ColumnHeader2.Width = 80
+		' 
+		' ColumnHeader3
+		' 
+		ColumnHeader3.Text = "Format"
+		' 
+		' ColumnHeader4
+		' 
+		ColumnHeader4.Text = "Total"
+		' 
+		' lsv_transaction
+		' 
+		lsv_transaction.Columns.AddRange(New ColumnHeader() {ColumnHeader1, ColumnHeader2, ColumnHeader3, ColumnHeader4})
+		lsv_transaction.FullRowSelect = True
+		lsv_transaction.GridLines = True
+		lsv_transaction.Location = New Point(836, 100)
+		lsv_transaction.Name = "lsv_transaction"
+		lsv_transaction.Size = New Size(436, 343)
+		lsv_transaction.TabIndex = 39
+		lsv_transaction.UseCompatibleStateImageBehavior = False
+		lsv_transaction.View = View.Details
+		' 
+		' DateTimePicker1
+		' 
+		DateTimePicker1.Location = New Point(170, 192)
+		DateTimePicker1.Name = "DateTimePicker1"
+		DateTimePicker1.Size = New Size(367, 27)
+		DateTimePicker1.TabIndex = 52
+		' 
 		' transaction
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
@@ -308,7 +308,7 @@ Partial Class transaction
 		Controls.Add(btn_generate)
 		Controls.Add(btn_addItem)
 		Controls.Add(lbl_total)
-		Controls.Add(TextBox1)
+		Controls.Add(txb_total)
 		Controls.Add(lbl_date)
 		Controls.Add(btn_stadd)
 		Controls.Add(lbl_payment)
@@ -330,27 +330,27 @@ Partial Class transaction
 	Friend WithEvents cbx_stname As ComboBox
 	Friend WithEvents lbl_store As Label
 	Friend WithEvents txb_search As TextBox
-	Friend WithEvents lsv_transaction As ListView
-	Friend WithEvents ColumnHeader1 As ColumnHeader
 	Friend WithEvents lbl_payment As Label
 	Friend WithEvents cbx_payment As ComboBox
 	Friend WithEvents btn_stadd As Button
 	Friend WithEvents lbl_date As Label
-	Friend WithEvents TextBox1 As TextBox
+	Friend WithEvents txb_total As TextBox
 	Friend WithEvents lbl_total As Label
-	Friend WithEvents ColumnHeader2 As ColumnHeader
-	Friend WithEvents ColumnHeader3 As ColumnHeader
-	Friend WithEvents ColumnHeader4 As ColumnHeader
 	Friend WithEvents btn_addItem As Button
 	Friend WithEvents btn_generate As Button
 	Friend WithEvents btn_removeItem As Button
 	Friend WithEvents cbx_vehicle As ComboBox
 	Friend WithEvents lbl_vehicle As Label
-	Friend WithEvents DateTimePicker1 As DateTimePicker
 	Friend WithEvents dgv_lplist As DataGridView
 	Friend WithEvents loaded_productID As DataGridViewTextBoxColumn
 	Friend WithEvents prod_name As DataGridViewTextBoxColumn
 	Friend WithEvents prod_price As DataGridViewTextBoxColumn
 	Friend WithEvents loaded_stock As DataGridViewTextBoxColumn
 	Friend WithEvents prod_stock_format As DataGridViewTextBoxColumn
+	Friend WithEvents ColumnHeader1 As ColumnHeader
+	Friend WithEvents ColumnHeader2 As ColumnHeader
+	Friend WithEvents ColumnHeader3 As ColumnHeader
+	Friend WithEvents ColumnHeader4 As ColumnHeader
+	Friend WithEvents lsv_transaction As ListView
+	Friend WithEvents DateTimePicker1 As DateTimePicker
 End Class

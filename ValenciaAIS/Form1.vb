@@ -55,6 +55,21 @@
 		End If
 	End Sub
 
+	Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+		If currentChildForm IsNot Nothing AndAlso TypeOf currentChildForm Is transaction Then
+			Dim transactionForm As transaction = DirectCast(currentChildForm, transaction)
+			If transactionForm.HasUnsavedItems Then
+				Dim result As DialogResult = MessageBox.Show("There are unsaved items in the transaction. Are you sure you want to proceed?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+				If result = DialogResult.No Then
+					e.Cancel = True ' Cancel the form closing event if the user chooses not to proceed
+				Else
+					' Revert the items in the transaction list to dgv_lplist values
+					transactionForm.RevertItems()
+				End If
+			End If
+		End If
+	End Sub
+
 	Private Sub btn_transaction_Click(sender As Object, e As EventArgs) Handles btn_transaction.Click
 		childform(transaction)
 	End Sub

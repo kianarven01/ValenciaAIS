@@ -56,18 +56,28 @@ Public Class transaction
 		PopulateStoreComboBox()
 	End Sub
 
+	Private Sub ResizeListViewColumns()
+		Dim totalWidth = lsv_transaction.ClientSize.Width
+		Dim columnWidth = totalWidth \ lsv_transaction.Columns.Count
+
+		For Each column As ColumnHeader In lsv_transaction.Columns
+			column.Width = columnWidth
+		Next
+
+		lsv_transaction.Columns(lsv_transaction.Columns.Count - 1).Width += totalWidth Mod lsv_transaction.Columns.Count
+	End Sub
+
 
 	Private Sub transaction_Load(sender As Object, e As EventArgs)
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 		PopulateStoreComboBox() ' Call the method to populate the ComboBox with store names
 		cbx_stname.SetPlaceholder("Select Store")
-		Dim totalWidth = lsv_transaction.ClientSize.Width
-		Dim columnWidth = totalWidth \ lsv_transaction.Columns.Count
-		For Each column As ColumnHeader In lsv_transaction.Columns
-			column.Width = columnWidth
-		Next
-		lsv_transaction.Columns(lsv_transaction.Columns.Count - 1).Width += totalWidth Mod lsv_transaction.Columns.Count
+		ResizeListViewColumns()
+	End Sub
 
+
+	Private Sub transaction_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
+		ResizeListViewColumns()
 	End Sub
 
 
@@ -103,7 +113,7 @@ Public Class transaction
 
 			' Extract the product information from the selected row
 			Dim productName As String = selectedRow.Cells("prod_name").Value.ToString()
-			Dim price As String = selectedRow.Cells("prod_price").Value.ToString()
+			Dim price As Decimal = Convert.ToDecimal(selectedRow.Cells("prod_price").Value)
 			Dim format As String = selectedRow.Cells("prod_stock_format").Value.ToString()
 			Dim loadedProductId As Integer = Convert.ToInt32(selectedRow.Cells("loaded_productID").Value)
 			Dim loadedStock As Integer = Convert.ToInt32(selectedRow.Cells("loaded_stock").Value)
@@ -114,6 +124,12 @@ Public Class transaction
 				' Retrieve the quantity from the popup window
 				Dim quantity As Integer = quantityInputForm.Quantity
 
+				' Check if the entered quantity exceeds the available stock
+				If quantity > loadedStock Then
+					MessageBox.Show($"Insufficient stock. Available stock: {loadedStock}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+					Return
+				End If
+
 				' Deduct the quantity from the loaded stock in the loaded_product table
 				Dim queryDeductStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock - {quantity} WHERE loaded_productID = {loadedProductId}"
 				ExecuteNonQueryWithoutPrompt(queryDeductStock)
@@ -123,13 +139,17 @@ Public Class transaction
 				If existingItem IsNot Nothing Then
 					' Update the quantity of the existing item
 					Dim currentQuantity As Integer = Convert.ToInt32(existingItem.SubItems(1).Text)
-					existingItem.SubItems(1).Text = (currentQuantity + quantity).ToString()
+					Dim newQuantity As Integer = currentQuantity + quantity
+					existingItem.SubItems(1).Text = newQuantity.ToString()
+
+					' Recalculate the total price based on the updated quantity
+					existingItem.SubItems(3).Text = (price * newQuantity).ToString()
 				Else
 					' Add the selected product information along with the quantity to the ListView
 					Dim item As New ListViewItem(productName)
 					item.SubItems.Add(quantity.ToString())
 					item.SubItems.Add(format)
-					item.SubItems.Add(price)
+					item.SubItems.Add((price * quantity).ToString()) ' Calculate total price and add to ListView
 					lsv_transaction.Items.Add(item)
 				End If
 
@@ -138,6 +158,8 @@ Public Class transaction
 			End If
 		End If
 	End Sub
+
+
 
 
 	Private Sub btn_removeItem_Click(sender As Object, e As EventArgs) Handles btn_removeItem.Click
@@ -187,11 +209,7 @@ Public Class transaction
 				End If
 			Next
 		Next
-
-		' Clear the items in the transaction list
 		ClearItems()
-
-		' Reload dgv_lplist to reflect the changes
 		ReloadTransactionData()
 	End Sub
 

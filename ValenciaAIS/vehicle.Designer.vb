@@ -31,14 +31,12 @@ Partial Class vehicle
 		txb_model = New TextBox()
 		lbl_plate = New Label()
 		txb_plate = New TextBox()
-		lbl_date = New Label()
 		dgv_plist = New DataGridView()
 		Column1 = New DataGridViewTextBoxColumn()
 		Column2 = New DataGridViewTextBoxColumn()
 		Column3 = New DataGridViewTextBoxColumn()
 		Column4 = New DataGridViewTextBoxColumn()
 		Column5 = New DataGridViewTextBoxColumn()
-		DateTimePicker1 = New DateTimePicker()
 		dgv_lplist = New DataGridView()
 		loaded_productID = New DataGridViewTextBoxColumn()
 		prod_name = New DataGridViewTextBoxColumn()
@@ -145,17 +143,6 @@ Partial Class vehicle
 		txb_plate.Size = New Size(191, 34)
 		txb_plate.TabIndex = 52
 		' 
-		' lbl_date
-		' 
-		lbl_date.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
-		lbl_date.AutoSize = True
-		lbl_date.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_date.Location = New Point(29, 320)
-		lbl_date.Name = "lbl_date"
-		lbl_date.Size = New Size(64, 31)
-		lbl_date.TabIndex = 53
-		lbl_date.Text = "Date"
-		' 
 		' dgv_plist
 		' 
 		dgv_plist.AllowUserToAddRows = False
@@ -212,13 +199,6 @@ Partial Class vehicle
 		Column5.MinimumWidth = 6
 		Column5.Name = "Column5"
 		Column5.ReadOnly = True
-		' 
-		' DateTimePicker1
-		' 
-		DateTimePicker1.Location = New Point(126, 324)
-		DateTimePicker1.Name = "DateTimePicker1"
-		DateTimePicker1.Size = New Size(261, 27)
-		DateTimePicker1.TabIndex = 56
 		' 
 		' dgv_lplist
 		' 
@@ -352,9 +332,7 @@ Partial Class vehicle
 		Controls.Add(txb_search)
 		Controls.Add(Label1)
 		Controls.Add(dgv_lplist)
-		Controls.Add(DateTimePicker1)
 		Controls.Add(dgv_plist)
-		Controls.Add(lbl_date)
 		Controls.Add(txb_plate)
 		Controls.Add(lbl_plate)
 		Controls.Add(txb_model)
@@ -382,14 +360,12 @@ Partial Class vehicle
 	Friend WithEvents txb_model As TextBox
 	Friend WithEvents lbl_plate As Label
 	Friend WithEvents txb_plate As TextBox
-	Friend WithEvents lbl_date As Label
 	Friend WithEvents dgv_plist As DataGridView
 	Friend WithEvents Column1 As DataGridViewTextBoxColumn
 	Friend WithEvents Column2 As DataGridViewTextBoxColumn
 	Friend WithEvents Column3 As DataGridViewTextBoxColumn
 	Friend WithEvents Column4 As DataGridViewTextBoxColumn
 	Friend WithEvents Column5 As DataGridViewTextBoxColumn
-	Friend WithEvents DateTimePicker1 As DateTimePicker
 	Friend WithEvents dgv_lplist As DataGridView
 	Friend WithEvents Label1 As Label
 	Friend WithEvents txb_search As TextBox
