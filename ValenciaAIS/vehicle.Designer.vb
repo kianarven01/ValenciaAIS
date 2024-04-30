@@ -23,7 +23,7 @@ Partial Class vehicle
 	<System.Diagnostics.DebuggerStepThrough()> _
 	Private Sub InitializeComponent()
 		lbl_vehicle = New Label()
-		ComboBox1 = New ComboBox()
+		cbx_vehicle = New ComboBox()
 		lbl_vehicle1 = New Label()
 		lbl_model = New Label()
 		lbl_make = New Label()
@@ -49,8 +49,21 @@ Partial Class vehicle
 		btn_generate = New Button()
 		btn_remove_item = New Button()
 		TextBox1 = New TextBox()
+		btn_new = New Button()
+		btn_delete = New Button()
+		btn_update = New Button()
+		btn_create = New Button()
+		dgv_vlist = New DataGridView()
+		DataGridViewTextBoxColumn1 = New DataGridViewTextBoxColumn()
+		DataGridViewTextBoxColumn2 = New DataGridViewTextBoxColumn()
+		DataGridViewTextBoxColumn3 = New DataGridViewTextBoxColumn()
+		DataGridViewTextBoxColumn4 = New DataGridViewTextBoxColumn()
+		TextBox2 = New TextBox()
+		Label3 = New Label()
+		txb_vhcode = New TextBox()
 		CType(dgv_plist, ComponentModel.ISupportInitialize).BeginInit()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
+		CType(dgv_vlist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
 		' lbl_vehicle
@@ -64,31 +77,31 @@ Partial Class vehicle
 		lbl_vehicle.TabIndex = 34
 		lbl_vehicle.Text = "Vehicle Product Loading Information"
 		' 
-		' ComboBox1
+		' cbx_vehicle
 		' 
-		ComboBox1.FormattingEnabled = True
-		ComboBox1.Location = New Point(126, 218)
-		ComboBox1.Name = "ComboBox1"
-		ComboBox1.Size = New Size(175, 28)
-		ComboBox1.TabIndex = 37
+		cbx_vehicle.FormattingEnabled = True
+		cbx_vehicle.Location = New Point(130, 654)
+		cbx_vehicle.Name = "cbx_vehicle"
+		cbx_vehicle.Size = New Size(175, 28)
+		cbx_vehicle.TabIndex = 37
 		' 
 		' lbl_vehicle1
 		' 
 		lbl_vehicle1.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_vehicle1.AutoSize = True
 		lbl_vehicle1.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_vehicle1.Location = New Point(29, 215)
+		lbl_vehicle1.Location = New Point(33, 185)
 		lbl_vehicle1.Name = "lbl_vehicle1"
-		lbl_vehicle1.Size = New Size(91, 31)
+		lbl_vehicle1.Size = New Size(151, 31)
 		lbl_vehicle1.TabIndex = 38
-		lbl_vehicle1.Text = "Vehicle"
+		lbl_vehicle1.Text = "Vehicle Code"
 		' 
 		' lbl_model
 		' 
 		lbl_model.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_model.AutoSize = True
 		lbl_model.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_model.Location = New Point(29, 273)
+		lbl_model.Location = New Point(33, 243)
 		lbl_model.Name = "lbl_model"
 		lbl_model.Size = New Size(83, 31)
 		lbl_model.TabIndex = 39
@@ -99,7 +112,7 @@ Partial Class vehicle
 		lbl_make.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_make.AutoSize = True
 		lbl_make.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_make.Location = New Point(319, 215)
+		lbl_make.Location = New Point(323, 185)
 		lbl_make.Name = "lbl_make"
 		lbl_make.Size = New Size(73, 31)
 		lbl_make.TabIndex = 40
@@ -109,7 +122,7 @@ Partial Class vehicle
 		' 
 		txb_make.BackColor = Color.WhiteSmoke
 		txb_make.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_make.Location = New Point(416, 215)
+		txb_make.Location = New Point(420, 185)
 		txb_make.Name = "txb_make"
 		txb_make.Size = New Size(191, 34)
 		txb_make.TabIndex = 49
@@ -118,7 +131,7 @@ Partial Class vehicle
 		' 
 		txb_model.BackColor = Color.WhiteSmoke
 		txb_model.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_model.Location = New Point(126, 270)
+		txb_model.Location = New Point(130, 240)
 		txb_model.Name = "txb_model"
 		txb_model.Size = New Size(175, 34)
 		txb_model.TabIndex = 50
@@ -128,7 +141,7 @@ Partial Class vehicle
 		lbl_plate.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_plate.AutoSize = True
 		lbl_plate.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_plate.Location = New Point(319, 275)
+		lbl_plate.Location = New Point(323, 245)
 		lbl_plate.Name = "lbl_plate"
 		lbl_plate.Size = New Size(68, 31)
 		lbl_plate.TabIndex = 51
@@ -138,7 +151,7 @@ Partial Class vehicle
 		' 
 		txb_plate.BackColor = Color.WhiteSmoke
 		txb_plate.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_plate.Location = New Point(416, 272)
+		txb_plate.Location = New Point(420, 242)
 		txb_plate.Name = "txb_plate"
 		txb_plate.Size = New Size(191, 34)
 		txb_plate.TabIndex = 52
@@ -319,12 +332,136 @@ Partial Class vehicle
 		TextBox1.Size = New Size(406, 27)
 		TextBox1.TabIndex = 63
 		' 
+		' btn_new
+		' 
+		btn_new.Location = New Point(33, 538)
+		btn_new.Name = "btn_new"
+		btn_new.Size = New Size(139, 40)
+		btn_new.TabIndex = 66
+		btn_new.Text = "New"
+		btn_new.UseVisualStyleBackColor = True
+		' 
+		' btn_delete
+		' 
+		btn_delete.Location = New Point(472, 538)
+		btn_delete.Name = "btn_delete"
+		btn_delete.Size = New Size(139, 40)
+		btn_delete.TabIndex = 67
+		btn_delete.Text = "Delete"
+		btn_delete.UseVisualStyleBackColor = True
+		' 
+		' btn_update
+		' 
+		btn_update.Location = New Point(327, 538)
+		btn_update.Name = "btn_update"
+		btn_update.Size = New Size(139, 40)
+		btn_update.TabIndex = 65
+		btn_update.Text = "Update"
+		btn_update.UseVisualStyleBackColor = True
+		' 
+		' btn_create
+		' 
+		btn_create.Location = New Point(178, 538)
+		btn_create.Name = "btn_create"
+		btn_create.Size = New Size(143, 40)
+		btn_create.TabIndex = 64
+		btn_create.Text = "Create"
+		btn_create.UseVisualStyleBackColor = True
+		' 
+		' dgv_vlist
+		' 
+		dgv_vlist.AllowUserToAddRows = False
+		dgv_vlist.AllowUserToDeleteRows = False
+		dgv_vlist.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+		dgv_vlist.BackgroundColor = Color.FromArgb(CByte(255), CByte(255), CByte(128))
+		dgv_vlist.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+		dgv_vlist.Columns.AddRange(New DataGridViewColumn() {DataGridViewTextBoxColumn1, DataGridViewTextBoxColumn2, DataGridViewTextBoxColumn3, DataGridViewTextBoxColumn4})
+		dgv_vlist.Location = New Point(33, 341)
+		dgv_vlist.Name = "dgv_vlist"
+		dgv_vlist.ReadOnly = True
+		dgv_vlist.RowHeadersVisible = False
+		dgv_vlist.RowHeadersWidth = 51
+		dgv_vlist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
+		dgv_vlist.Size = New Size(578, 191)
+		dgv_vlist.TabIndex = 68
+		' 
+		' DataGridViewTextBoxColumn1
+		' 
+		DataGridViewTextBoxColumn1.DataPropertyName = "vehicle_code"
+		DataGridViewTextBoxColumn1.HeaderText = "Vehicle Code"
+		DataGridViewTextBoxColumn1.MinimumWidth = 6
+		DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
+		DataGridViewTextBoxColumn1.ReadOnly = True
+		' 
+		' DataGridViewTextBoxColumn2
+		' 
+		DataGridViewTextBoxColumn2.DataPropertyName = "make"
+		DataGridViewTextBoxColumn2.HeaderText = "Make"
+		DataGridViewTextBoxColumn2.MinimumWidth = 6
+		DataGridViewTextBoxColumn2.Name = "DataGridViewTextBoxColumn2"
+		DataGridViewTextBoxColumn2.ReadOnly = True
+		' 
+		' DataGridViewTextBoxColumn3
+		' 
+		DataGridViewTextBoxColumn3.DataPropertyName = "model"
+		DataGridViewTextBoxColumn3.HeaderText = "Model"
+		DataGridViewTextBoxColumn3.MinimumWidth = 6
+		DataGridViewTextBoxColumn3.Name = "DataGridViewTextBoxColumn3"
+		DataGridViewTextBoxColumn3.ReadOnly = True
+		' 
+		' DataGridViewTextBoxColumn4
+		' 
+		DataGridViewTextBoxColumn4.DataPropertyName = "plate"
+		DataGridViewTextBoxColumn4.HeaderText = "Plate"
+		DataGridViewTextBoxColumn4.MinimumWidth = 6
+		DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
+		DataGridViewTextBoxColumn4.ReadOnly = True
+		' 
+		' TextBox2
+		' 
+		TextBox2.BackColor = Color.WhiteSmoke
+		TextBox2.BorderStyle = BorderStyle.None
+		TextBox2.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+		TextBox2.Location = New Point(33, 308)
+		TextBox2.Name = "TextBox2"
+		TextBox2.PlaceholderText = "Search Vehicle"
+		TextBox2.Size = New Size(406, 27)
+		TextBox2.TabIndex = 69
+		' 
+		' Label3
+		' 
+		Label3.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		Label3.AutoSize = True
+		Label3.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+		Label3.Location = New Point(33, 654)
+		Label3.Name = "Label3"
+		Label3.Size = New Size(91, 31)
+		Label3.TabIndex = 70
+		Label3.Text = "Vehicle"
+		' 
+		' txb_vhcode
+		' 
+		txb_vhcode.BackColor = Color.WhiteSmoke
+		txb_vhcode.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+		txb_vhcode.Location = New Point(190, 184)
+		txb_vhcode.Name = "txb_vhcode"
+		txb_vhcode.Size = New Size(115, 34)
+		txb_vhcode.TabIndex = 71
+		' 
 		' vehicle
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
 		ClientSize = New Size(1354, 733)
+		Controls.Add(txb_vhcode)
+		Controls.Add(Label3)
+		Controls.Add(TextBox2)
+		Controls.Add(dgv_vlist)
+		Controls.Add(btn_new)
+		Controls.Add(btn_delete)
+		Controls.Add(btn_update)
+		Controls.Add(btn_create)
 		Controls.Add(TextBox1)
 		Controls.Add(btn_remove_item)
 		Controls.Add(btn_generate)
@@ -340,19 +477,20 @@ Partial Class vehicle
 		Controls.Add(lbl_make)
 		Controls.Add(lbl_model)
 		Controls.Add(lbl_vehicle1)
-		Controls.Add(ComboBox1)
+		Controls.Add(cbx_vehicle)
 		Controls.Add(lbl_vehicle)
 		FormBorderStyle = FormBorderStyle.None
 		Name = "vehicle"
 		Text = "vehicle"
 		CType(dgv_plist, ComponentModel.ISupportInitialize).EndInit()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).EndInit()
+		CType(dgv_vlist, ComponentModel.ISupportInitialize).EndInit()
 		ResumeLayout(False)
 		PerformLayout()
 	End Sub
 
 	Friend WithEvents lbl_vehicle As Label
-	Friend WithEvents ComboBox1 As ComboBox
+	Friend WithEvents cbx_vehicle As ComboBox
 	Friend WithEvents lbl_vehicle1 As Label
 	Friend WithEvents lbl_model As Label
 	Friend WithEvents lbl_make As Label
@@ -378,4 +516,16 @@ Partial Class vehicle
 	Friend WithEvents prod_price As DataGridViewTextBoxColumn
 	Friend WithEvents loaded_stock As DataGridViewTextBoxColumn
 	Friend WithEvents prod_stock_format As DataGridViewTextBoxColumn
+	Friend WithEvents btn_new As Button
+	Friend WithEvents btn_delete As Button
+	Friend WithEvents btn_update As Button
+	Friend WithEvents btn_create As Button
+	Friend WithEvents dgv_vlist As DataGridView
+	Friend WithEvents TextBox2 As TextBox
+	Friend WithEvents Label3 As Label
+	Friend WithEvents txb_vhcode As TextBox
+	Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
+	Friend WithEvents DataGridViewTextBoxColumn2 As DataGridViewTextBoxColumn
+	Friend WithEvents DataGridViewTextBoxColumn3 As DataGridViewTextBoxColumn
+	Friend WithEvents DataGridViewTextBoxColumn4 As DataGridViewTextBoxColumn
 End Class
