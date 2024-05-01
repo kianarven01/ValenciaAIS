@@ -73,9 +73,6 @@ Module DBConnection
     End Sub
 
 
-
-
-
     Public Sub updates(ByVal sql As String)
         Try
             strcon.Open()

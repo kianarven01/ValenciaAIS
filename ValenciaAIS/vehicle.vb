@@ -3,6 +3,7 @@
 Public Class vehicle
 	Public Event LoadedProductDataChanged As EventHandler
 	Private loadingVehicleCodes As Boolean = False
+
 	Private Sub ExecuteNonQueryWithoutPrompt(ByVal sql As String)
 		Try
 			strcon.Open()
@@ -23,16 +24,19 @@ Public Class vehicle
 		' Load data into dgv_plist from product table
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 		reload("SELECT * FROM product", dgv_plist)
-		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
-
+		InitializeLoadedProductDataGridView()
 	End Sub
 
 	Private Sub vehicle_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
 		If Me.Visible Then
 			' Clear the fields when the form becomes visible
 			ClearFields()
+			dgv_lplist.DataSource = Nothing
 		End If
 	End Sub
+
+
+
 
 	Private Sub ProductDataChangedHandler(ByVal sender As Object, ByVal e As EventArgs)
 		' Reload dgv_plist and dgv_lplist to reflect the changes
@@ -50,6 +54,12 @@ Public Class vehicle
 			Dim productPrice = Convert.ToDecimal(selectedRow.Cells(2).Value)
 			Dim productStockFormat = Convert.ToString(selectedRow.Cells(4).Value)
 
+			' Check if a vehicle is selected in the ComboBox
+			If cbx_vehicle.SelectedItem Is Nothing Then
+				MessageBox.Show("Please select a vehicle first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+				Return
+			End If
+
 			' Prompt the user to enter the quantity
 			Dim quantityForm As New QuantityInputForm
 			If quantityForm.ShowDialog = DialogResult.OK Then
@@ -60,34 +70,44 @@ Public Class vehicle
 				Dim queryDeductStock = $"UPDATE product SET prod_stock = prod_stock - {quantity} WHERE productID = {productId}"
 				ExecuteNonQueryWithoutPrompt(queryDeductStock)
 
-				' Check if the product already exists in loaded_product
-				Dim queryCheckExistingProduct = $"SELECT COUNT(*) FROM loaded_product WHERE productID = {productId}"
-				Dim existingProductCount = 0
-				Try
-					strcon.Open()
-					cmd.Connection = strcon
-					cmd.CommandText = queryCheckExistingProduct
-					existingProductCount = Convert.ToInt32(cmd.ExecuteScalar)
-				Catch ex As Exception
-					MessageBox.Show(ex.Message)
-				Finally
-					strcon.Close()
-				End Try
-				' If the product already exists, update the loaded_stock, otherwise insert a new record
-				If existingProductCount > 0 Then
-					Dim queryUpdateLoadedStock = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE productID = {productId}"
-					ExecuteNonQueryWithoutPrompt(queryUpdateLoadedStock)
-				Else
-					Dim queryAddToLoadedStock = $"INSERT INTO loaded_product (productID, loaded_stock) VALUES ({productId}, {quantity})"
-					ExecuteNonQueryWithoutPrompt(queryAddToLoadedStock)
-				End If
-				RaiseEvent LoadedProductDataChanged(Me, EventArgs.Empty)
+				' Associate the loaded product with the selected vehicle
+				Dim selectedVehicleCode As String = cbx_vehicle.SelectedItem.ToString()
+				AssociateProductWithVehicle(productId, selectedVehicleCode, quantity)
+
 				' Reload dgv_plist and dgv_lplist to reflect the changes
 				reload("SELECT * FROM product", dgv_plist)
-				' Update the SQL query to include price and format columns
-				reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
+
+				' Trigger the selected index changed event of cbx_vehicle to reload dgv_lplist
+				cbx_vehicle_SelectedIndexChanged(cbx_vehicle, EventArgs.Empty)
 			End If
 		End If
+	End Sub
+
+
+	Private Sub AssociateProductWithVehicle(productId As Integer, vehicleCode As String, quantity As Integer)
+		' Check if the product already exists in loaded_product
+		Dim queryCheckExistingProduct = $"SELECT COUNT(*) FROM loaded_product WHERE productID = {productId} AND vehicle_code = '{vehicleCode}'"
+		Dim existingProductCount = 0
+		Try
+			strcon.Open()
+			cmd.Connection = strcon
+			cmd.CommandText = queryCheckExistingProduct
+			existingProductCount = Convert.ToInt32(cmd.ExecuteScalar)
+		Catch ex As Exception
+			MessageBox.Show(ex.Message)
+		Finally
+			strcon.Close()
+		End Try
+
+		' If the product already exists for the selected vehicle, update the loaded_stock, otherwise insert a new record
+		If existingProductCount > 0 Then
+			Dim queryUpdateLoadedStock = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE productID = {productId} AND vehicle_code = '{vehicleCode}'"
+			ExecuteNonQueryWithoutPrompt(queryUpdateLoadedStock)
+		Else
+			Dim queryAddToLoadedStock = $"INSERT INTO loaded_product (productID, loaded_stock, vehicle_code) VALUES ({productId}, {quantity}, '{vehicleCode}')"
+			ExecuteNonQueryWithoutPrompt(queryAddToLoadedStock)
+		End If
+		RaiseEvent LoadedProductDataChanged(Me, EventArgs.Empty)
 	End Sub
 
 	Private Function GetProductIdByName(ByVal productName As String) As Integer
@@ -136,6 +156,9 @@ Public Class vehicle
 				reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 				reload("SELECT * FROM product", dgv_plist)
 
+				' Refresh the ComboBox to reload the associated loaded products
+				cbx_vehicle_SelectedIndexChanged(cbx_vehicle, EventArgs.Empty)
+
 				MessageBox.Show("Item removed successfully and stock updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
 			Else
 				MessageBox.Show("Selected product not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -144,6 +167,9 @@ Public Class vehicle
 			MessageBox.Show("Please select an item to remove.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End If
 	End Sub
+
+
+
 
 	'CRUD
 	Private Sub ClearFields()
@@ -274,7 +300,7 @@ Public Class vehicle
 				cbx_vehicle.Items.Add(reader("vehicle_code").ToString())
 			End While
 		Catch ex As Exception
-			MessageBox.Show(ex.Message)
+			MessageBox.Show("Error loading vehicle codes: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		Finally
 			' Close connection
 			strcon.Close()
@@ -288,13 +314,60 @@ Public Class vehicle
 		loadingVehicleCodes = False
 	End Sub
 
+	Private Sub InitializeLoadedProductDataGridView()
+		' Only initialize columns if they haven't been initialized already
+		If dgv_lplist.Columns.Count = 0 Then
+			dgv_lplist.AutoGenerateColumns = False
+
+			' Define columns manually
+			Dim colLoadedProductId As New DataGridViewTextBoxColumn()
+			colLoadedProductId.HeaderText = "Loaded Product ID"
+			colLoadedProductId.DataPropertyName = "loaded_productID"
+			dgv_lplist.Columns.Add(colLoadedProductId)
+
+			Dim colProductName As New DataGridViewTextBoxColumn()
+			colProductName.HeaderText = "Product Name"
+			colProductName.DataPropertyName = "prod_name"
+			dgv_lplist.Columns.Add(colProductName)
+
+			Dim colProductPrice As New DataGridViewTextBoxColumn()
+			colProductPrice.HeaderText = "Product Price"
+			colProductPrice.DataPropertyName = "prod_price"
+			dgv_lplist.Columns.Add(colProductPrice)
+
+			Dim colLoadedStock As New DataGridViewTextBoxColumn()
+			colLoadedStock.HeaderText = "Loaded Stock"
+			colLoadedStock.DataPropertyName = "loaded_stock"
+			dgv_lplist.Columns.Add(colLoadedStock)
+
+			Dim colProductStockFormat As New DataGridViewTextBoxColumn()
+			colProductStockFormat.HeaderText = "Format"
+			colProductStockFormat.DataPropertyName = "prod_stock_format"
+			dgv_lplist.Columns.Add(colProductStockFormat)
+		End If
+
+		' Attach the DataBindingComplete event handler
+		AddHandler dgv_lplist.DataBindingComplete, AddressOf dgv_lplist_DataBindingComplete
+	End Sub
+
+	Private Sub dgv_lplist_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs)
+		' Manually set the column names after data binding is complete
+		dgv_lplist.Columns("loaded_productID").HeaderText = "Loaded Product ID"
+		dgv_lplist.Columns("prod_name").HeaderText = "Product Name"
+		dgv_lplist.Columns("prod_price").HeaderText = "Product Price"
+		dgv_lplist.Columns("loaded_stock").HeaderText = "Loaded Stock"
+		dgv_lplist.Columns("prod_stock_format").HeaderText = "Format"
+	End Sub
+
+
+
 
 	Private Sub cbx_vehicle_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbx_vehicle.SelectedIndexChanged
-		If cbx_vehicle.SelectedValue IsNot Nothing Then
-			Dim selectedVehicleCode As String = cbx_vehicle.SelectedValue.ToString()
-			' Now you can use selectedVehicleCode safely
-			' Fetch the details of the selected vehicle from the database
-			Dim query As String = $"SELECT make, model, plate FROM vehicle WHERE vehicle_code = '{selectedVehicleCode}'"
+		If cbx_vehicle.SelectedItem IsNot Nothing Then
+			Dim selectedVehicleCode As String = cbx_vehicle.SelectedItem.ToString()
+
+			' Construct the SQL query to fetch loaded products associated with the selected vehicle code
+			Dim query As String = $"SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID WHERE lp.vehicle_code = '{selectedVehicleCode}'"
 
 			Try
 				' Open connection
@@ -304,24 +377,21 @@ Public Class vehicle
 				cmd.Connection = strcon
 				cmd.CommandText = query
 
-				' Execute command and fetch data
-				Dim reader As MySqlDataReader = cmd.ExecuteReader()
-				If reader.Read() Then
-					' Populate the textboxes with the fetched data
-					txb_make.Text = reader("make").ToString()
-					txb_model.Text = reader("model").ToString()
-					txb_plate.Text = reader("plate").ToString()
-				Else
-					' If no data found for the selected vehicle code, clear textboxes
-					txb_make.Clear()
-					txb_model.Clear()
-					txb_plate.Clear()
-				End If
+				' Create a DataTable to store the results
+				Dim dt As New DataTable()
+
+				' Fill the DataTable with the results
+				dt.Load(cmd.ExecuteReader())
+
+				' Bind the DataTable to the DataGridView
+				dgv_lplist.DataSource = dt
 			Catch ex As Exception
-				MessageBox.Show(ex.Message)
+				MessageBox.Show("Error fetching data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 			Finally
 				' Close connection
-				strcon.Close()
+				If strcon.State = ConnectionState.Open Then
+					strcon.Close()
+				End If
 			End Try
 		End If
 	End Sub
