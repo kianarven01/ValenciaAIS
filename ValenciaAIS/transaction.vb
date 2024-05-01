@@ -68,12 +68,17 @@ Public Class transaction
 	End Sub
 
 
-	Private Sub transaction_Load(sender As Object, e As EventArgs)
+	Private Sub transaction_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 		PopulateStoreComboBox() ' Call the method to populate the ComboBox with store names
+		PopulateVehicleComboBox() ' Call the method to populate the ComboBox with vehicle codes
+		InitializeLoadedProductDataGridView()
 		cbx_stname.SetPlaceholder("Select Store")
 		ResizeListViewColumns()
 	End Sub
+
+
+
 
 
 	Private Sub transaction_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
@@ -89,6 +94,8 @@ Public Class transaction
 		If Me.Visible Then
 			ClearFields()
 			ReloadTransactionData()
+			PopulateStoreComboBox()
+			dgv_lplist.DataSource = Nothing
 		End If
 	End Sub
 
@@ -96,12 +103,58 @@ Public Class transaction
 
 		cbx_stname.SelectedIndex = -1
 		cbx_payment.Text = ""
+		cbx_vehicle.Text = ""
 		cbx_payment.SetPlaceholder("Select Format")
 	End Sub
 
 
 	Public Sub ClearItems()
 		lsv_transaction.Items.Clear()
+	End Sub
+
+	Private Sub InitializeLoadedProductDataGridView()
+		' Only initialize columns if they haven't been initialized already
+		If dgv_lplist.Columns.Count = 0 Then
+			dgv_lplist.AutoGenerateColumns = False
+
+			' Define columns manually
+			Dim colLoadedProductId As New DataGridViewTextBoxColumn()
+			colLoadedProductId.HeaderText = "Loaded Product ID"
+			colLoadedProductId.DataPropertyName = "loaded_productID"
+			dgv_lplist.Columns.Add(colLoadedProductId)
+
+			Dim colProductName As New DataGridViewTextBoxColumn()
+			colProductName.HeaderText = "Product Name"
+			colProductName.DataPropertyName = "prod_name"
+			dgv_lplist.Columns.Add(colProductName)
+
+			Dim colProductPrice As New DataGridViewTextBoxColumn()
+			colProductPrice.HeaderText = "Product Price"
+			colProductPrice.DataPropertyName = "prod_price"
+			dgv_lplist.Columns.Add(colProductPrice)
+
+			Dim colLoadedStock As New DataGridViewTextBoxColumn()
+			colLoadedStock.HeaderText = "Loaded Stock"
+			colLoadedStock.DataPropertyName = "loaded_stock"
+			dgv_lplist.Columns.Add(colLoadedStock)
+
+			Dim colProductStockFormat As New DataGridViewTextBoxColumn()
+			colProductStockFormat.HeaderText = "Format"
+			colProductStockFormat.DataPropertyName = "prod_stock_format"
+			dgv_lplist.Columns.Add(colProductStockFormat)
+		End If
+
+		' Attach the DataBindingComplete event handler
+		AddHandler dgv_lplist.DataBindingComplete, AddressOf dgv_lplist_DataBindingComplete
+	End Sub
+
+	Private Sub dgv_lplist_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs)
+		' Manually set the column names after data binding is complete
+		dgv_lplist.Columns("loaded_productID").HeaderText = "Loaded Product ID"
+		dgv_lplist.Columns("prod_name").HeaderText = "Product Name"
+		dgv_lplist.Columns("prod_price").HeaderText = "Product Price"
+		dgv_lplist.Columns("loaded_stock").HeaderText = "Loaded Stock"
+		dgv_lplist.Columns("prod_stock_format").HeaderText = "Format"
 	End Sub
 
 
@@ -134,6 +187,9 @@ Public Class transaction
 				Dim queryDeductStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock - {quantity} WHERE loaded_productID = {loadedProductId}"
 				ExecuteNonQueryWithoutPrompt(queryDeductStock)
 
+				' Update the loaded stock in the selected row
+				selectedRow.Cells("loaded_stock").Value = loadedStock - quantity
+
 				' Check if an item with the same product name already exists in lsv_transaction
 				Dim existingItem As ListViewItem = lsv_transaction.FindItemWithText(productName)
 				If existingItem IsNot Nothing Then
@@ -152,15 +208,9 @@ Public Class transaction
 					item.SubItems.Add((price * quantity).ToString()) ' Calculate total price and add to ListView
 					lsv_transaction.Items.Add(item)
 				End If
-
-				' Reload dgv_lplist to reflect the changes
-				ReloadTransactionData()
 			End If
 		End If
 	End Sub
-
-
-
 
 	Private Sub btn_removeItem_Click(sender As Object, e As EventArgs) Handles btn_removeItem.Click
 		If lsv_transaction.SelectedItems.Count > 0 Then
@@ -178,19 +228,21 @@ Public Class transaction
 					Dim loadedProductId As Integer = Convert.ToInt32(row.Cells("loaded_productID").Value)
 					Dim queryAddStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE loaded_productID = {loadedProductId}"
 					ExecuteNonQueryWithoutPrompt(queryAddStock)
+
+					' Update the loaded stock in the DataGridView
+					Dim updatedStock As Integer = Convert.ToInt32(row.Cells("loaded_stock").Value) + quantity
+					row.Cells("loaded_stock").Value = updatedStock
 					Exit For
 				End If
 			Next
 
 			' Remove the item from lsv_transaction
 			lsv_transaction.Items.Remove(selectedItem)
-
-			' Reload dgv_lplist to reflect the changes
-			ReloadTransactionData()
 		Else
 			MessageBox.Show("Please select an item to remove.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
 		End If
 	End Sub
+
 
 	Public Sub RevertItems()
 		' Iterate through the items in the transaction list
@@ -249,6 +301,68 @@ Public Class transaction
 
 		' Your code to generate the transaction goes here
 		' ...
+	End Sub
+
+	Private Sub PopulateVehicleComboBox()
+		Try
+			Dim query As String = "SELECT vehicle_code FROM vehicle"
+			Dim dt As New DataTable()
+
+			' Fill the DataTable with data from the vehicle table
+			Using connection As New MySqlConnection(connectionString)
+				Using adapter As New MySqlDataAdapter(query, connection)
+					adapter.Fill(dt)
+				End Using
+			End Using
+
+			' Clear the ComboBox items
+			cbx_vehicle.Items.Clear()
+
+			' Add items to the ComboBox from the DataTable
+			For Each row As DataRow In dt.Rows
+				cbx_vehicle.Items.Add(row("vehicle_code").ToString())
+			Next
+
+			' Set placeholder text 
+			cbx_vehicle.SetPlaceholder("Select Vehicle")
+		Catch ex As Exception
+			MessageBox.Show("Error loading vehicle data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		End Try
+	End Sub
+
+
+	Private Sub cbx_vehicle_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbx_vehicle.SelectedIndexChanged
+		If cbx_vehicle.SelectedItem IsNot Nothing Then
+			Dim selectedVehicleCode As String = cbx_vehicle.SelectedItem.ToString()
+
+			' Construct the SQL query to fetch loaded products associated with the selected vehicle code
+			Dim query As String = $"SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID WHERE lp.vehicle_code = '{selectedVehicleCode}'"
+
+			Try
+				' Open connection
+				strcon.Open()
+
+				' Set up command
+				cmd.Connection = strcon
+				cmd.CommandText = query
+
+				' Create a DataTable to store the results
+				Dim dt As New DataTable()
+
+				' Fill the DataTable with the results
+				dt.Load(cmd.ExecuteReader())
+
+				' Bind the DataTable to the DataGridView
+				dgv_lplist.DataSource = dt
+			Catch ex As Exception
+				MessageBox.Show("Error fetching data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			Finally
+				' Close connection
+				If strcon.State = ConnectionState.Open Then
+					strcon.Close()
+				End If
+			End Try
+		End If
 	End Sub
 
 End Class

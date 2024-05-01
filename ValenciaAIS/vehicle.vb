@@ -84,7 +84,7 @@ Public Class vehicle
 	End Sub
 
 
-	Private Sub AssociateProductWithVehicle(productId As Integer, vehicleCode As String, quantity As Integer)
+	Public Sub AssociateProductWithVehicle(productId As Integer, vehicleCode As String, quantity As Integer)
 		' Check if the product already exists in loaded_product
 		Dim queryCheckExistingProduct = $"SELECT COUNT(*) FROM loaded_product WHERE productID = {productId} AND vehicle_code = '{vehicleCode}'"
 		Dim existingProductCount = 0
@@ -167,8 +167,6 @@ Public Class vehicle
 			MessageBox.Show("Please select an item to remove.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End If
 	End Sub
-
-
 
 
 	'CRUD
@@ -358,7 +356,6 @@ Public Class vehicle
 		dgv_lplist.Columns("loaded_stock").HeaderText = "Loaded Stock"
 		dgv_lplist.Columns("prod_stock_format").HeaderText = "Format"
 	End Sub
-
 
 
 
