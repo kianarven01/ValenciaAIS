@@ -1,4 +1,5 @@
 ﻿Imports MySql.Data.MySqlClient
+Imports Mysqlx.XDevAPI.Relational
 
 Public Class vehicle
 	Public Event LoadedProductDataChanged As EventHandler
@@ -20,12 +21,25 @@ Public Class vehicle
 	Private Sub vehicle_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		AddHandler product.ProductDataChanged, AddressOf ProductDataChangedHandler
 		txb_vhcode.Enabled = False
+		EnableVehicleDetails(False)
+		EnableVehicleDetails(DBConnection.UserType = "admin")
 		LoadVehicleCodes()
 		' Load data into dgv_plist from product table
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 		reload("SELECT * FROM product", dgv_plist)
 		InitializeLoadedProductDataGridView()
 	End Sub
+
+	Private Sub EnableVehicleDetails(ByVal enable As Boolean)
+		txb_make.Enabled = enable
+		txb_model.Enabled = enable
+		txb_plate.Enabled = enable
+		btn_new.Enabled = enable
+		btn_create.Enabled = enable
+		btn_update.Enabled = enable
+		btn_delete.Enabled = enable
+	End Sub
+
 
 	Private Sub vehicle_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
 		If Me.Visible Then
