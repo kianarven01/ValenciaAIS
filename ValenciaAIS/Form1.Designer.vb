@@ -82,6 +82,7 @@ Partial Class Form1
 		' 
 		' mainpanel
 		' 
+		mainpanel.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
 		mainpanel.BackColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
 		mainpanel.BorderStyle = BorderStyle.FixedSingle
 		mainpanel.Location = New Point(196, 126)
@@ -102,6 +103,7 @@ Partial Class Form1
 		' 
 		' btn_settings
 		' 
+		btn_settings.Anchor = AnchorStyles.Right
 		btn_settings.Location = New Point(1417, 50)
 		btn_settings.Name = "btn_settings"
 		btn_settings.Size = New Size(94, 29)
@@ -111,6 +113,7 @@ Partial Class Form1
 		' 
 		' btn_logout
 		' 
+		btn_logout.Anchor = AnchorStyles.Right
 		btn_logout.Location = New Point(1417, 15)
 		btn_logout.Name = "btn_logout"
 		btn_logout.Size = New Size(94, 29)
@@ -140,9 +143,11 @@ Partial Class Form1
 		Controls.Add(btn_product)
 		Controls.Add(btn_supplier)
 		Controls.Add(btn_transaction)
+		FormBorderStyle = FormBorderStyle.FixedToolWindow
 		Name = "Form1"
 		StartPosition = FormStartPosition.CenterScreen
 		Text = "Valencia AIS"
+		WindowState = FormWindowState.Maximized
 		Panel1.ResumeLayout(False)
 		ResumeLayout(False)
 	End Sub
