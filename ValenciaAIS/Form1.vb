@@ -21,7 +21,7 @@
 					Return
 				Else
 					' Revert the items in the transaction list to dgv_lplist values
-					transactionForm.RevertItems()
+					transactionForm.ClearItems()
 				End If
 			End If
 		End If
@@ -63,12 +63,13 @@
 				If result = DialogResult.No Then
 					e.Cancel = True ' Cancel the form closing event if the user chooses not to proceed
 				Else
-					' Revert the items in the transaction list to dgv_lplist values
-					transactionForm.RevertItems()
+					' Clear the items in the transaction list and update stock
+					transactionForm.ClearItems()
 				End If
 			End If
 		End If
 	End Sub
+
 
 	Private Sub btn_transaction_Click(sender As Object, e As EventArgs) Handles btn_transaction.Click
 		childform(transaction)

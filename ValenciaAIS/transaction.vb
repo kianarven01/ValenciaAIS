@@ -137,7 +137,7 @@ Public Class transaction
 		cbx_stname.SelectedIndex = -1
 		cbx_payment.Text = ""
 		cbx_vehicle.Text = ""
-		cbx_payment.SetPlaceholder("Select Format")
+		cbx_payment.SetPlaceholder("Select Payment Method")
 	End Sub
 
 	Public Sub ClearItems()
@@ -215,6 +215,12 @@ Public Class transaction
 		dgv_lplist.Columns("prod_stock_format").HeaderText = "Format"
 	End Sub
 	Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
+
+		If cbx_stname.SelectedIndex = -1 OrElse cbx_payment.SelectedIndex = -1 Then
+			MessageBox.Show("Please select a store and a payment method before adding items.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			Return
+		End If
+
 		' Check if a valid cell is clicked and it's not the header row
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
 			' Get the selected row
@@ -256,6 +262,7 @@ Public Class transaction
 
 					' Recalculate the total price based on the updated quantity
 					existingItem.SubItems(3).Text = (price * newQuantity).ToString()
+					UpdateTotalSum()
 				Else
 					' Add the selected product information along with the quantity to the ListView
 					Dim item As New ListViewItem(productName)
@@ -263,6 +270,7 @@ Public Class transaction
 					item.SubItems.Add(format)
 					item.SubItems.Add((price * quantity).ToString()) ' Calculate total price and add to ListView
 					lsv_transaction.Items.Add(item)
+					UpdateTotalSum()
 				End If
 			End If
 		End If
@@ -294,6 +302,7 @@ Public Class transaction
 
 			' Remove the item from lsv_transaction
 			lsv_transaction.Items.Remove(selectedItem)
+			UpdateTotalSum()
 		Else
 			MessageBox.Show("Please select an item to remove.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
 		End If
@@ -341,6 +350,23 @@ Public Class transaction
 		storeForm.Show()
 	End Sub
 
+	Public Sub UpdateTotalSum()
+		' Variable to store the total sum of product prices
+		Dim totalSum As Decimal = 0
+
+		' Iterate through items in the transaction list and calculate the total sum
+		For Each item As ListViewItem In lsv_transaction.Items
+			Dim totalPrice As Decimal
+			If Decimal.TryParse(item.SubItems(3).Text, totalPrice) Then
+				' Add the price of the current item to the total sum
+				totalSum += totalPrice
+			End If
+		Next
+
+		' Display the total sum in the TextBox with the peso sign
+		txb_total.Text = $"₱{totalSum:F}" ' Assuming txb_total is the name of your TextBox
+	End Sub
+
 	Private Sub btn_generate_Click(sender As Object, e As EventArgs) Handles btn_generate.Click
 		' Check if both ComboBoxes are not selected and the ListView is empty
 		If (cbx_stname.SelectedIndex = -1 AndAlso cbx_payment.SelectedIndex = -1) AndAlso lsv_transaction.Items.Count = 0 Then
@@ -364,8 +390,11 @@ Public Class transaction
 		Dim storeName As String = cbx_stname.SelectedItem.ToString()
 		Dim transactionDate As String = dtp_transaction.Value.ToString("MM-dd-yyyy_HH-mm-ss")
 
+		' Include timestamp in the file name
+		Dim timestamp As String = DateTime.Now.ToString("yyyyMMddHHmmss")
+		Dim fileName As String = $"{storeName}_{transactionDate}_{timestamp}.pdf"
+
 		' Specify the file path for the PDF receipt using the store name and transaction date
-		Dim fileName As String = $"{storeName}_{transactionDate}.pdf"
 		Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
 		Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
 		Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
@@ -398,7 +427,7 @@ Public Class transaction
 			table.AddCell("Total Price")
 
 			' Variable to store the total sum of product prices
-			Dim totalSum As Decimal = 0
+			Dim totalSum As Decimal = Decimal.Parse(txb_total.Text.Replace("₱", ""), Globalization.NumberStyles.Currency)
 
 			' Iterate through items in the transaction list and add them to the table
 			For Each item As ListViewItem In lsv_transaction.Items
@@ -412,9 +441,6 @@ Public Class transaction
 				table.AddCell(quantity)
 				table.AddCell(format)
 				table.AddCell(totalPrice)
-
-				' Add the price of the current item to the total sum
-				totalSum += Decimal.Parse(totalPrice, Globalization.NumberStyles.Currency)
 			Next
 
 			' Create a font that supports the Philippine Peso symbol
@@ -434,6 +460,16 @@ Public Class transaction
 
 			' Show a success message
 			MessageBox.Show($"Receipt generated successfully. Saved as: {filePath}", "Receipt Generated", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+			' Clear the transaction list and total sum TextBox after generating receipt
+			lsv_transaction.Items.Clear()
+			txb_total.Text = ""
+			If lsv_transaction.Items.Count = 0 Then
+				cbx_stname.SelectedIndex = -1
+				cbx_payment.SelectedIndex = -1
+				cbx_payment.SetPlaceholder("Select Payment Method") ' Reset placeholder
+			End If
+
 		Catch ex As Exception
 			' Show an error message if an exception occurs
 			MessageBox.Show($"An error occurred while generating the receipt: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
