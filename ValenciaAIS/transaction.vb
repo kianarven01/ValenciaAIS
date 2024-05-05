@@ -388,22 +388,34 @@ Public Class transaction
 
 		' Get the selected store name and transaction date
 		Dim storeName As String = cbx_stname.SelectedItem.ToString()
-		Dim transactionDate As String = dtp_transaction.Value.ToString("MM-dd-yyyy_HH-mm-ss")
+		Dim transactionDate As String = dtp_transaction.Value.ToString("yyyy-MM-dd HH:mm:ss")
 
-		' Include timestamp in the file name
-		Dim timestamp As String = DateTime.Now.ToString("yyyyMMddHHmmss")
-		Dim fileName As String = $"{storeName}_{transactionDate}_{timestamp}.pdf"
+		' Define SQL queries to insert data into the invoices and invoice_items tables
+		Dim insertInvoiceQuery As String = $"INSERT INTO invoices (store_id, payment_method, transaction_date) VALUES ((SELECT storeID FROM store WHERE store_name = '{storeName}'), '{cbx_payment.SelectedItem}', '{transactionDate}')"
+		Dim invoiceId As Integer = -1 ' Initialize invoice ID
 
 		Try
-			' Specify the file path for the PDF receipt using the store name and transaction date
+			' Open connection
+			strcon.Open()
+
+			' Execute the query to insert data into the invoices table
+			cmd.Connection = strcon
+			cmd.CommandText = insertInvoiceQuery
+			cmd.ExecuteNonQuery()
+
+			' Get the last inserted invoice ID
+			cmd.CommandText = "SELECT LAST_INSERT_ID()"
+			invoiceId = Convert.ToInt32(cmd.ExecuteScalar())
+
+			' Create a folder to store receipts if it doesn't exist
 			Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
 			Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
-
-			' Check if the receipts folder exists, if not, create it
 			If Not Directory.Exists(receiptsFolderPath) Then
 				Directory.CreateDirectory(receiptsFolderPath)
 			End If
 
+			' Generate file name with timestamp
+			Dim fileName As String = $"{storeName}_{transactionDate.Replace(":", "").Replace("-", "").Replace(" ", "_")}.pdf"
 			Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
 
 			' Create a new iTextSharp Document
@@ -464,24 +476,52 @@ Public Class transaction
 			' Add the table to the document
 			document.Add(table)
 
-			' Show a success message
+			' Close the document
 			document.Close()
+
+			' Insert data into the invoice_items table for each item in the ListView
+			For Each item As ListViewItem In lsv_transaction.Items
+				Dim productName As String = item.SubItems(0).Text
+				Dim quantity As Integer = Convert.ToInt32(item.SubItems(1).Text)
+				Dim format As String = item.SubItems(2).Text
+				Dim totalPrice As Decimal = Decimal.Parse(item.SubItems(3).Text.Replace("₱", ""), CultureInfo.InvariantCulture)
+
+				' Get the product ID based on the product name
+				Dim productId As Integer = -1 ' Initialize product ID
+				cmd.CommandText = $"SELECT productID FROM product WHERE prod_name = '{productName}'"
+				Dim reader As MySqlDataReader = cmd.ExecuteReader()
+				If reader.Read() Then
+					productId = reader.GetInt32(0)
+				End If
+				reader.Close()
+
+				' Insert data into the invoice_items table
+				Dim insertInvoiceItemQuery As String = $"INSERT INTO invoice_items (invoice_id, product_id, quantity, format, total_price) VALUES ({invoiceId}, {productId}, {quantity}, '{format}', {totalPrice})"
+				cmd.CommandText = insertInvoiceItemQuery
+				cmd.ExecuteNonQuery()
+			Next
+
+			' Show a success message
 			MessageBox.Show($"Receipt generated successfully. Saved as: {filePath}", "Receipt Generated", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
 			' Clear the transaction list and total sum TextBox after generating receipt
 			lsv_transaction.Items.Clear()
 			txb_total.Text = ""
-			If lsv_transaction.Items.Count = 0 Then
-				cbx_stname.SelectedIndex = -1
-				cbx_payment.SelectedIndex = -1
-				cbx_payment.SetPlaceholder("Select Payment Method") ' Reset placeholder
-			End If
+			cbx_stname.SelectedIndex = -1
+			cbx_payment.SelectedIndex = -1
+			cbx_payment.SetPlaceholder("Select Payment Method") ' Reset placeholder
 
 		Catch ex As Exception
 			' Show an error message if an exception occurs
 			MessageBox.Show($"An error occurred while generating the receipt: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		Finally
+			' Close connection
+			If strcon.State = ConnectionState.Open Then
+				strcon.Close()
+			End If
 		End Try
 	End Sub
+
 
 
 	Private Sub PopulateVehicleComboBox()
