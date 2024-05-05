@@ -28,11 +28,11 @@ Partial Class Form1
 		btn_stores = New Button()
 		btn_invoice = New Button()
 		mainpanel = New Panel()
-		Panel1 = New Panel()
+		top_panel = New Panel()
 		btn_settings = New Button()
 		btn_logout = New Button()
 		btn_vehicle = New Button()
-		Panel1.SuspendLayout()
+		top_panel.SuspendLayout()
 		SuspendLayout()
 		' 
 		' btn_transaction
@@ -90,16 +90,17 @@ Partial Class Form1
 		mainpanel.Size = New Size(1354, 733)
 		mainpanel.TabIndex = 19
 		' 
-		' Panel1
+		' top_panel
 		' 
-		Panel1.BackColor = Color.FromArgb(CByte(255), CByte(192), CByte(255))
-		Panel1.BorderStyle = BorderStyle.Fixed3D
-		Panel1.Controls.Add(btn_settings)
-		Panel1.Controls.Add(btn_logout)
-		Panel1.Location = New Point(12, 12)
-		Panel1.Name = "Panel1"
-		Panel1.Size = New Size(1538, 97)
-		Panel1.TabIndex = 20
+		top_panel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		top_panel.BackColor = Color.FromArgb(CByte(255), CByte(192), CByte(255))
+		top_panel.BorderStyle = BorderStyle.Fixed3D
+		top_panel.Controls.Add(btn_settings)
+		top_panel.Controls.Add(btn_logout)
+		top_panel.Location = New Point(12, 12)
+		top_panel.Name = "top_panel"
+		top_panel.Size = New Size(1538, 97)
+		top_panel.TabIndex = 20
 		' 
 		' btn_settings
 		' 
@@ -138,7 +139,7 @@ Partial Class Form1
 		Controls.Add(btn_stores)
 		Controls.Add(btn_invoice)
 		Controls.Add(btn_vehicle)
-		Controls.Add(Panel1)
+		Controls.Add(top_panel)
 		Controls.Add(mainpanel)
 		Controls.Add(btn_product)
 		Controls.Add(btn_supplier)
@@ -148,7 +149,7 @@ Partial Class Form1
 		StartPosition = FormStartPosition.CenterScreen
 		Text = "Valencia AIS"
 		WindowState = FormWindowState.Maximized
-		Panel1.ResumeLayout(False)
+		top_panel.ResumeLayout(False)
 		ResumeLayout(False)
 	End Sub
 	Friend WithEvents btn_transaction As Button
@@ -158,7 +159,7 @@ Partial Class Form1
 	Friend WithEvents btn_stores As Button
 	Friend WithEvents btn_invoice As Button
 	Friend WithEvents mainpanel As Panel
-	Friend WithEvents Panel1 As Panel
+	Friend WithEvents top_panel As Panel
 	Friend WithEvents btn_logout As Button
 	Friend WithEvents btn_settings As Button
 	Friend WithEvents btn_vehicle As Button

@@ -1,5 +1,11 @@
 ﻿Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 Imports MySql.Data.MySqlClient
+Imports iTextSharp.text
+Imports iTextSharp.text.pdf
+Imports System.IO
+Imports System.Globalization
+Imports System.Reflection.Metadata
+Imports System.Windows.Forms.VisualStyles.VisualStyleElement.ProgressBar
 
 Public Class transaction
 	Private isFormVisible As Boolean = False
@@ -50,7 +56,6 @@ Public Class transaction
 			MessageBox.Show("Error loading store data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End Try
 	End Sub
-
 	Private Sub StoreForm_FormClosed(sender As Object, e As FormClosedEventArgs)
 		' Reload the ComboBox items when the stores form is closed
 		PopulateStoreComboBox()
@@ -78,17 +83,45 @@ Public Class transaction
 	End Sub
 
 
-
-
-
 	Private Sub transaction_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
 		ResizeListViewColumns()
 	End Sub
 
 
 	Private Sub ReloadTransactionData()
-		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
+		If cbx_vehicle.SelectedItem IsNot Nothing Then
+			Dim selectedVehicleCode As String = cbx_vehicle.SelectedItem.ToString()
+
+			' Construct the SQL query to fetch loaded products associated with the selected vehicle code
+			Dim query As String = $"SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID WHERE lp.vehicle_code = '{selectedVehicleCode}'"
+
+			Try
+				' Open connection
+				strcon.Open()
+
+				' Set up command
+				cmd.Connection = strcon
+				cmd.CommandText = query
+
+				' Create a DataTable to store the results
+				Dim dt As New DataTable()
+
+				' Fill the DataTable with the results
+				dt.Load(cmd.ExecuteReader())
+
+				' Bind the DataTable to the DataGridView
+				dgv_lplist.DataSource = dt
+			Catch ex As Exception
+				MessageBox.Show("Error fetching data: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			Finally
+				' Close connection
+				If strcon.State = ConnectionState.Open Then
+					strcon.Close()
+				End If
+			End Try
+		End If
 	End Sub
+
 
 	Private Sub transaction_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged, MyBase.Load
 		If Me.Visible Then
@@ -107,10 +140,36 @@ Public Class transaction
 		cbx_payment.SetPlaceholder("Select Format")
 	End Sub
 
-
 	Public Sub ClearItems()
+		' Revert the items in lsv_transaction
+		For Each item As ListViewItem In lsv_transaction.Items
+			Dim productName As String = item.SubItems(0).Text
+			Dim quantity As Integer = Convert.ToInt32(item.SubItems(1).Text)
+
+			' Find the corresponding row in dgv_lplist
+			For Each row As DataGridViewRow In dgv_lplist.Rows
+				If productName = row.Cells("prod_name").Value.ToString() Then
+					' Update the loaded stock in the dgv_lplist DataGridView
+					Dim loadedProductId As Integer = Convert.ToInt32(row.Cells("loaded_productID").Value)
+					Dim queryAddStock As String = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE loaded_productID = {loadedProductId}"
+					ExecuteNonQueryWithoutPrompt(queryAddStock)
+
+					' Update the loaded stock in the DataGridView
+					Dim updatedStock As Integer = Convert.ToInt32(row.Cells("loaded_stock").Value) + quantity
+					row.Cells("loaded_stock").Value = updatedStock
+					Exit For
+				End If
+			Next
+		Next
+
+		' Clear the items in lsv_transaction
 		lsv_transaction.Items.Clear()
+
+		' Refresh the DataGridView to reflect the updated stocks
+		ReloadTransactionData()
 	End Sub
+
+
 
 	Private Sub InitializeLoadedProductDataGridView()
 		' Only initialize columns if they haven't been initialized already
@@ -147,7 +206,6 @@ Public Class transaction
 		' Attach the DataBindingComplete event handler
 		AddHandler dgv_lplist.DataBindingComplete, AddressOf dgv_lplist_DataBindingComplete
 	End Sub
-
 	Private Sub dgv_lplist_DataBindingComplete(sender As Object, e As DataGridViewBindingCompleteEventArgs)
 		' Manually set the column names after data binding is complete
 		dgv_lplist.Columns("loaded_productID").HeaderText = "Loaded Product ID"
@@ -156,8 +214,6 @@ Public Class transaction
 		dgv_lplist.Columns("loaded_stock").HeaderText = "Loaded Stock"
 		dgv_lplist.Columns("prod_stock_format").HeaderText = "Format"
 	End Sub
-
-
 	Private Sub dgv_lplist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_lplist.CellDoubleClick
 		' Check if a valid cell is clicked and it's not the header row
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
@@ -245,6 +301,7 @@ Public Class transaction
 
 
 	Public Sub RevertItems()
+
 		' Iterate through the items in the transaction list
 		For Each item As ListViewItem In lsv_transaction.Items
 			Dim productName As String = item.SubItems(0).Text
@@ -271,8 +328,12 @@ Public Class transaction
 		If cbx_stname.SelectedIndex = -1 Then
 			' Set placeholder text
 			cbx_stname.SetPlaceholder("Select Store")
+		Else
+			' Clear items in lsv_transaction when the store is changed
+			ClearItems()
 		End If
 	End Sub
+
 
 	Private Sub btn_stadd_Click(sender As Object, e As EventArgs) Handles btn_stadd.Click
 		Dim storeForm As New stores()
@@ -299,9 +360,90 @@ Public Class transaction
 			Return
 		End If
 
-		' Your code to generate the transaction goes here
-		' ...
+		' Get the selected store name and transaction date
+		Dim storeName As String = cbx_stname.SelectedItem.ToString()
+		Dim transactionDate As String = dtp_transaction.Value.ToString("MM-dd-yyyy_HH-mm-ss")
+
+		' Specify the file path for the PDF receipt using the store name and transaction date
+		Dim fileName As String = $"{storeName}_{transactionDate}.pdf"
+		Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
+		Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
+		Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
+
+		' Create a new iTextSharp Document
+		Dim document As New iTextSharp.text.Document()
+
+		Try
+			' Create a PdfWriter to write to the specified file path
+			Dim writer As PdfWriter = PdfWriter.GetInstance(document, New FileStream(filePath, FileMode.Create))
+
+			' Open the document for writing
+			document.Open()
+
+			' Add store and payment information to the PDF
+			document.Add(New Paragraph($"Store: {cbx_stname.SelectedItem}"))
+			document.Add(New Paragraph($"Payment Method: {cbx_payment.SelectedItem}"))
+			document.Add(New Paragraph($"Transaction Date: {dtp_transaction.Value.ToString("MM/dd/yyyy HH:mm:ss")}"))
+			document.Add(New Paragraph(Environment.NewLine))
+
+			' Create a table to mimic the ListView format
+			Dim table As New PdfPTable(4) ' Number of columns in the table
+			table.WidthPercentage = 100 ' Make the table fill the width of the document
+			table.HorizontalAlignment = Element.ALIGN_LEFT ' Align the table to the left
+
+			' Add headers to the table
+			table.AddCell("Product Name")
+			table.AddCell("Quantity")
+			table.AddCell("Format")
+			table.AddCell("Total Price")
+
+			' Variable to store the total sum of product prices
+			Dim totalSum As Decimal = 0
+
+			' Iterate through items in the transaction list and add them to the table
+			For Each item As ListViewItem In lsv_transaction.Items
+				Dim productName As String = item.SubItems(0).Text
+				Dim quantity As String = item.SubItems(1).Text
+				Dim format As String = item.SubItems(2).Text
+				Dim totalPrice As String = item.SubItems(3).Text
+
+				' Add item details to the table
+				table.AddCell(productName)
+				table.AddCell(quantity)
+				table.AddCell(format)
+				table.AddCell(totalPrice)
+
+				' Add the price of the current item to the total sum
+				totalSum += Decimal.Parse(totalPrice, Globalization.NumberStyles.Currency)
+			Next
+
+			' Create a font that supports the Philippine Peso symbol
+			Dim fontPath As String = "C:\Windows\Fonts\Arial.ttf" ' Adjust the font path as needed
+			Dim baseFont As BaseFont = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED)
+			Dim font As New Font(baseFont, 12, Font.NORMAL)
+
+			' Add a row for the total sum at the bottom of the table
+			Dim totalSumCell As New PdfPCell(New Phrase($"Total Sum: ₱{totalSum:F}", font))
+			totalSumCell.Colspan = 4 ' Span all columns
+			totalSumCell.HorizontalAlignment = Element.ALIGN_RIGHT ' Align to the right
+			totalSumCell.Border = Rectangle.NO_BORDER ' Remove border
+			table.AddCell(totalSumCell)
+
+			' Add the table to the document
+			document.Add(table)
+
+			' Show a success message
+			MessageBox.Show($"Receipt generated successfully. Saved as: {filePath}", "Receipt Generated", MessageBoxButtons.OK, MessageBoxIcon.Information)
+		Catch ex As Exception
+			' Show an error message if an exception occurs
+			MessageBox.Show($"An error occurred while generating the receipt: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		Finally
+			' Close the document
+			document.Close()
+		End Try
 	End Sub
+
+
 
 	Private Sub PopulateVehicleComboBox()
 		Try
@@ -364,5 +506,6 @@ Public Class transaction
 			End Try
 		End If
 	End Sub
+
 
 End Class

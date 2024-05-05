@@ -48,7 +48,7 @@ Partial Class transaction
 		ColumnHeader3 = New ColumnHeader()
 		ColumnHeader4 = New ColumnHeader()
 		lsv_transaction = New ListView()
-		DateTimePicker1 = New DateTimePicker()
+		dtp_transaction = New DateTimePicker()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
@@ -287,12 +287,12 @@ Partial Class transaction
 		lsv_transaction.UseCompatibleStateImageBehavior = False
 		lsv_transaction.View = View.Details
 		' 
-		' DateTimePicker1
+		' dtp_transaction
 		' 
-		DateTimePicker1.Location = New Point(170, 192)
-		DateTimePicker1.Name = "DateTimePicker1"
-		DateTimePicker1.Size = New Size(367, 27)
-		DateTimePicker1.TabIndex = 52
+		dtp_transaction.Location = New Point(170, 192)
+		dtp_transaction.Name = "dtp_transaction"
+		dtp_transaction.Size = New Size(367, 27)
+		dtp_transaction.TabIndex = 52
 		' 
 		' transaction
 		' 
@@ -301,7 +301,7 @@ Partial Class transaction
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
 		ClientSize = New Size(1354, 733)
 		Controls.Add(dgv_lplist)
-		Controls.Add(DateTimePicker1)
+		Controls.Add(dtp_transaction)
 		Controls.Add(lbl_vehicle)
 		Controls.Add(cbx_vehicle)
 		Controls.Add(btn_removeItem)
@@ -352,5 +352,5 @@ Partial Class transaction
 	Friend WithEvents ColumnHeader3 As ColumnHeader
 	Friend WithEvents ColumnHeader4 As ColumnHeader
 	Friend WithEvents lsv_transaction As ListView
-	Friend WithEvents DateTimePicker1 As DateTimePicker
+	Friend WithEvents dtp_transaction As DateTimePicker
 End Class
