@@ -394,15 +394,21 @@ Public Class transaction
 		Dim timestamp As String = DateTime.Now.ToString("yyyyMMddHHmmss")
 		Dim fileName As String = $"{storeName}_{transactionDate}_{timestamp}.pdf"
 
-		' Specify the file path for the PDF receipt using the store name and transaction date
-		Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
-		Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
-		Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
-
-		' Create a new iTextSharp Document
-		Dim document As New iTextSharp.text.Document()
-
 		Try
+			' Specify the file path for the PDF receipt using the store name and transaction date
+			Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
+			Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
+
+			' Check if the receipts folder exists, if not, create it
+			If Not Directory.Exists(receiptsFolderPath) Then
+				Directory.CreateDirectory(receiptsFolderPath)
+			End If
+
+			Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
+
+			' Create a new iTextSharp Document
+			Dim document As New iTextSharp.text.Document()
+
 			' Create a PdfWriter to write to the specified file path
 			Dim writer As PdfWriter = PdfWriter.GetInstance(document, New FileStream(filePath, FileMode.Create))
 
@@ -459,6 +465,7 @@ Public Class transaction
 			document.Add(table)
 
 			' Show a success message
+			document.Close()
 			MessageBox.Show($"Receipt generated successfully. Saved as: {filePath}", "Receipt Generated", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
 			' Clear the transaction list and total sum TextBox after generating receipt
@@ -473,12 +480,8 @@ Public Class transaction
 		Catch ex As Exception
 			' Show an error message if an exception occurs
 			MessageBox.Show($"An error occurred while generating the receipt: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-		Finally
-			' Close the document
-			document.Close()
 		End Try
 	End Sub
-
 
 
 	Private Sub PopulateVehicleComboBox()
@@ -543,5 +546,22 @@ Public Class transaction
 		End If
 	End Sub
 
+	Private Sub btn_showReceipt_Click(sender As Object, e As EventArgs) Handles btn_showReceipt.Click
+		Try
+			' Specify the path to the receipt folder
+			Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
+			Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
+
+			' Check if the receipts folder exists
+			If Directory.Exists(receiptsFolderPath) Then
+				' Open the folder using the default file explorer
+				Process.Start("explorer.exe", receiptsFolderPath)
+			Else
+				MessageBox.Show("The receipts folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			End If
+		Catch ex As Exception
+			MessageBox.Show($"An error occurred while opening the receipt folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		End Try
+	End Sub
 
 End Class

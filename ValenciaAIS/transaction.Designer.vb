@@ -49,6 +49,7 @@ Partial Class transaction
 		ColumnHeader4 = New ColumnHeader()
 		lsv_transaction = New ListView()
 		dtp_transaction = New DateTimePicker()
+		btn_showReceipt = New Button()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
@@ -294,12 +295,22 @@ Partial Class transaction
 		dtp_transaction.Size = New Size(367, 27)
 		dtp_transaction.TabIndex = 52
 		' 
+		' btn_showReceipt
+		' 
+		btn_showReceipt.Location = New Point(46, 520)
+		btn_showReceipt.Name = "btn_showReceipt"
+		btn_showReceipt.Size = New Size(133, 28)
+		btn_showReceipt.TabIndex = 59
+		btn_showReceipt.Text = "Show Receipts"
+		btn_showReceipt.UseVisualStyleBackColor = True
+		' 
 		' transaction
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
 		ClientSize = New Size(1354, 733)
+		Controls.Add(btn_showReceipt)
 		Controls.Add(dgv_lplist)
 		Controls.Add(dtp_transaction)
 		Controls.Add(lbl_vehicle)
@@ -353,4 +364,5 @@ Partial Class transaction
 	Friend WithEvents ColumnHeader4 As ColumnHeader
 	Friend WithEvents lsv_transaction As ListView
 	Friend WithEvents dtp_transaction As DateTimePicker
+	Friend WithEvents btn_showReceipt As Button
 End Class
