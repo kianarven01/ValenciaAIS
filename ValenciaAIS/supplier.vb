@@ -6,7 +6,6 @@ Public Class supplier
 	Private Sub supplier_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		reload("SELECT * FROM supplier", dgv_slist)
 		txb_sID.Enabled = False
-		btn_refresh.Enabled = False
 		btn_delete.Enabled = False
 		btn_delete.Enabled = (DBConnection.UserType = "admin")
 	End Sub
@@ -38,16 +37,6 @@ Public Class supplier
 		End Try
 		reload("SELECT * FROM supplier", dgv_slist)
 	End Sub
-
-	'press alt+shift to multiselect cursor
-
-	'Private Sub btn_refresh_Click(sender As Object, e As EventArgs) Handles btn_refresh.Click
-	'	Try
-	'		reload("SELECT * FROM supplier", dgv_slist)
-	'	Catch ex As Exception
-	'		MessageBox.Show(ex.Message)
-	'	End Try
-	'End Sub
 
 	Private Sub btn_update_Click(sender As Object, e As EventArgs) Handles btn_update.Click
 		Try

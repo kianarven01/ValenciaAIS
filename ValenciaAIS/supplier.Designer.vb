@@ -33,7 +33,6 @@ Partial Class supplier
 		Column4 = New DataGridViewTextBoxColumn()
 		txb_saddress = New TextBox()
 		btn_new = New Button()
-		btn_refresh = New Button()
 		btn_delete = New Button()
 		btn_update = New Button()
 		btn_create = New Button()
@@ -149,15 +148,6 @@ Partial Class supplier
 		btn_new.Text = "New"
 		btn_new.UseVisualStyleBackColor = True
 		' 
-		' btn_refresh
-		' 
-		btn_refresh.Location = New Point(1119, 420)
-		btn_refresh.Name = "btn_refresh"
-		btn_refresh.Size = New Size(205, 40)
-		btn_refresh.TabIndex = 20
-		btn_refresh.Text = "Refresh"
-		btn_refresh.UseVisualStyleBackColor = True
-		' 
 		' btn_delete
 		' 
 		btn_delete.Location = New Point(317, 484)
@@ -200,7 +190,7 @@ Partial Class supplier
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
-		ClientSize = New Size(1336, 563)
+		ClientSize = New Size(1580, 926)
 		Controls.Add(txb_search)
 		Controls.Add(txb_sID)
 		Controls.Add(txb_sname)
@@ -209,7 +199,6 @@ Partial Class supplier
 		Controls.Add(dgv_slist)
 		Controls.Add(txb_saddress)
 		Controls.Add(btn_new)
-		Controls.Add(btn_refresh)
 		Controls.Add(btn_delete)
 		Controls.Add(btn_update)
 		Controls.Add(btn_create)
@@ -232,7 +221,6 @@ Partial Class supplier
 	Friend WithEvents Column4 As DataGridViewTextBoxColumn
 	Friend WithEvents txb_saddress As TextBox
 	Friend WithEvents btn_new As Button
-	Friend WithEvents btn_refresh As Button
 	Friend WithEvents btn_delete As Button
 	Friend WithEvents btn_update As Button
 	Friend WithEvents btn_create As Button

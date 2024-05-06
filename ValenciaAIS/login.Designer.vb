@@ -33,11 +33,15 @@ Partial Class login
 		PictureBox2 = New PictureBox()
 		btn_login = New Button()
 		btn_cancel = New Button()
+		Panel3 = New Panel()
+		PictureBox3 = New PictureBox()
 		CType(pcb_login, ComponentModel.ISupportInitialize).BeginInit()
 		Panel1.SuspendLayout()
 		CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
 		Panel2.SuspendLayout()
 		CType(PictureBox2, ComponentModel.ISupportInitialize).BeginInit()
+		Panel3.SuspendLayout()
+		CType(PictureBox3, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
 		' pcb_login
@@ -67,7 +71,7 @@ Partial Class login
 		Panel1.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		Panel1.Controls.Add(txb_username)
 		Panel1.Controls.Add(PictureBox1)
-		Panel1.Location = New Point(76, 329)
+		Panel1.Location = New Point(76, 384)
 		Panel1.Name = "Panel1"
 		Panel1.Size = New Size(323, 58)
 		Panel1.TabIndex = 2
@@ -96,7 +100,7 @@ Partial Class login
 		Panel2.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		Panel2.Controls.Add(txb_password)
 		Panel2.Controls.Add(PictureBox2)
-		Panel2.Location = New Point(76, 405)
+		Panel2.Location = New Point(76, 460)
 		Panel2.Name = "Panel2"
 		Panel2.Size = New Size(323, 58)
 		Panel2.TabIndex = 5
@@ -123,7 +127,7 @@ Partial Class login
 		' btn_login
 		' 
 		btn_login.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
-		btn_login.Location = New Point(190, 492)
+		btn_login.Location = New Point(190, 537)
 		btn_login.Name = "btn_login"
 		btn_login.Size = New Size(94, 29)
 		btn_login.TabIndex = 6
@@ -133,18 +137,39 @@ Partial Class login
 		' btn_cancel
 		' 
 		btn_cancel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
-		btn_cancel.Location = New Point(190, 536)
+		btn_cancel.Location = New Point(190, 581)
 		btn_cancel.Name = "btn_cancel"
 		btn_cancel.Size = New Size(94, 29)
 		btn_cancel.TabIndex = 7
 		btn_cancel.Text = "Cancel"
 		btn_cancel.UseVisualStyleBackColor = True
 		' 
+		' Panel3
+		' 
+		Panel3.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		Panel3.Controls.Add(PictureBox3)
+		Panel3.Location = New Point(76, 310)
+		Panel3.Name = "Panel3"
+		Panel3.Size = New Size(323, 58)
+		Panel3.TabIndex = 5
+		' 
+		' PictureBox3
+		' 
+		PictureBox3.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		PictureBox3.Image = CType(resources.GetObject("PictureBox3.Image"), Image)
+		PictureBox3.Location = New Point(8, 9)
+		PictureBox3.Name = "PictureBox3"
+		PictureBox3.Size = New Size(40, 40)
+		PictureBox3.SizeMode = PictureBoxSizeMode.StretchImage
+		PictureBox3.TabIndex = 3
+		PictureBox3.TabStop = False
+		' 
 		' login
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		ClientSize = New Size(490, 648)
+		Controls.Add(Panel3)
 		Controls.Add(btn_cancel)
 		Controls.Add(btn_login)
 		Controls.Add(Panel2)
@@ -164,6 +189,8 @@ Partial Class login
 		Panel2.ResumeLayout(False)
 		Panel2.PerformLayout()
 		CType(PictureBox2, ComponentModel.ISupportInitialize).EndInit()
+		Panel3.ResumeLayout(False)
+		CType(PictureBox3, ComponentModel.ISupportInitialize).EndInit()
 		ResumeLayout(False)
 		PerformLayout()
 	End Sub
@@ -178,4 +205,6 @@ Partial Class login
 	Friend WithEvents PictureBox2 As PictureBox
 	Friend WithEvents btn_login As Button
 	Friend WithEvents btn_cancel As Button
+	Friend WithEvents Panel3 As Panel
+	Friend WithEvents PictureBox3 As PictureBox
 End Class

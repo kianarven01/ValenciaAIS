@@ -26,7 +26,6 @@ Partial Class Form1
 		btn_supplier = New Button()
 		btn_product = New Button()
 		btn_stores = New Button()
-		btn_invoice = New Button()
 		mainpanel = New Panel()
 		top_panel = New Panel()
 		btn_settings = New Button()
@@ -70,15 +69,6 @@ Partial Class Form1
 		btn_stores.TabIndex = 17
 		btn_stores.Text = "Stores"
 		btn_stores.UseVisualStyleBackColor = True
-		' 
-		' btn_invoice
-		' 
-		btn_invoice.Location = New Point(12, 742)
-		btn_invoice.Name = "btn_invoice"
-		btn_invoice.Size = New Size(169, 117)
-		btn_invoice.TabIndex = 18
-		btn_invoice.Text = "Invoice"
-		btn_invoice.UseVisualStyleBackColor = True
 		' 
 		' mainpanel
 		' 
@@ -137,7 +127,6 @@ Partial Class Form1
 		AutoScaleMode = AutoScaleMode.Font
 		ClientSize = New Size(1562, 879)
 		Controls.Add(btn_stores)
-		Controls.Add(btn_invoice)
 		Controls.Add(btn_vehicle)
 		Controls.Add(top_panel)
 		Controls.Add(mainpanel)
@@ -157,7 +146,6 @@ Partial Class Form1
 	Friend WithEvents btn_supplier As Button
 	Friend WithEvents btn_product As Button
 	Friend WithEvents btn_stores As Button
-	Friend WithEvents btn_invoice As Button
 	Friend WithEvents mainpanel As Panel
 	Friend WithEvents top_panel As Panel
 	Friend WithEvents btn_logout As Button
