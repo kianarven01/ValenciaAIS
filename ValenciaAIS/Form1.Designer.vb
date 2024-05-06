@@ -27,8 +27,9 @@ Partial Class Form1
 		btn_product = New Button()
 		btn_stores = New Button()
 		mainpanel = New Panel()
+		lbl_company = New Label()
 		top_panel = New Panel()
-		btn_settings = New Button()
+		btn_restore = New Button()
 		btn_logout = New Button()
 		btn_vehicle = New Button()
 		top_panel.SuspendLayout()
@@ -73,41 +74,53 @@ Partial Class Form1
 		' mainpanel
 		' 
 		mainpanel.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
-		mainpanel.BackColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+		mainpanel.BackColor = Color.DimGray
 		mainpanel.BorderStyle = BorderStyle.FixedSingle
 		mainpanel.Location = New Point(196, 126)
 		mainpanel.Name = "mainpanel"
 		mainpanel.Size = New Size(1354, 733)
 		mainpanel.TabIndex = 19
 		' 
+		' lbl_company
+		' 
+		lbl_company.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		lbl_company.AutoSize = True
+		lbl_company.Font = New Font("Segoe UI", 25.8000011F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+		lbl_company.Location = New Point(14, 15)
+		lbl_company.Name = "lbl_company"
+		lbl_company.Size = New Size(834, 60)
+		lbl_company.TabIndex = 22
+		lbl_company.Text = "Valencia Agricultural Inventory System"
+		' 
 		' top_panel
 		' 
 		top_panel.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		top_panel.BackColor = Color.FromArgb(CByte(255), CByte(192), CByte(255))
 		top_panel.BorderStyle = BorderStyle.Fixed3D
-		top_panel.Controls.Add(btn_settings)
+		top_panel.Controls.Add(lbl_company)
+		top_panel.Controls.Add(btn_restore)
 		top_panel.Controls.Add(btn_logout)
 		top_panel.Location = New Point(12, 12)
 		top_panel.Name = "top_panel"
 		top_panel.Size = New Size(1538, 97)
 		top_panel.TabIndex = 20
 		' 
-		' btn_settings
+		' btn_restore
 		' 
-		btn_settings.Anchor = AnchorStyles.Right
-		btn_settings.Location = New Point(1417, 50)
-		btn_settings.Name = "btn_settings"
-		btn_settings.Size = New Size(94, 29)
-		btn_settings.TabIndex = 1
-		btn_settings.Text = "Settings"
-		btn_settings.UseVisualStyleBackColor = True
+		btn_restore.Anchor = AnchorStyles.Right
+		btn_restore.Location = New Point(1362, 50)
+		btn_restore.Name = "btn_restore"
+		btn_restore.Size = New Size(149, 29)
+		btn_restore.TabIndex = 1
+		btn_restore.Text = "Restore Database"
+		btn_restore.UseVisualStyleBackColor = True
 		' 
 		' btn_logout
 		' 
 		btn_logout.Anchor = AnchorStyles.Right
-		btn_logout.Location = New Point(1417, 15)
+		btn_logout.Location = New Point(1362, 15)
 		btn_logout.Name = "btn_logout"
-		btn_logout.Size = New Size(94, 29)
+		btn_logout.Size = New Size(149, 29)
 		btn_logout.TabIndex = 0
 		btn_logout.Text = "Logout"
 		btn_logout.UseVisualStyleBackColor = True
@@ -139,6 +152,7 @@ Partial Class Form1
 		Text = "Valencia AIS"
 		WindowState = FormWindowState.Maximized
 		top_panel.ResumeLayout(False)
+		top_panel.PerformLayout()
 		ResumeLayout(False)
 	End Sub
 	Friend WithEvents btn_transaction As Button
@@ -149,7 +163,8 @@ Partial Class Form1
 	Friend WithEvents mainpanel As Panel
 	Friend WithEvents top_panel As Panel
 	Friend WithEvents btn_logout As Button
-	Friend WithEvents btn_settings As Button
+	Friend WithEvents btn_restore As Button
 	Friend WithEvents btn_vehicle As Button
+	Friend WithEvents lbl_company As Label
 
 End Class

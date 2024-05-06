@@ -20,7 +20,20 @@ Public Class login
             Return
         End If
 
-        ' Your login code here
+        ' Check if the username and password match the superadmin credentials
+        If txb_username.Text.ToLower() = "superadmin" AndAlso txb_password.Text.ToLower() = "superadmin" Then
+            ' Set UserType to "superadmin"
+            DBConnection.UserType = "superadmin"
+            ' Set LoginSuccessful property to True
+            LoginSuccessful = True
+            ' Close the login form
+            Me.Close()
+            ' Show a message indicating successful login
+            MessageBox.Show("Logged in as superadmin.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        ' Your login code for other users here
         Dim sql As String = "SELECT * FROM user WHERE username = @username AND password = @password AND user_type = @userType"
         Using connection As MySqlConnection = DBConnection.strconnection()
             Using adapter As New MySqlDataAdapter(sql, connection)
@@ -47,12 +60,15 @@ Public Class login
                         ' Login failed
                         MessageBox.Show("Invalid username, password, or user type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End If
+                Catch ex As MySqlException When ex.Number = 1049 ' MySQL error number for unknown database
+                    MessageBox.Show("Database not found. Please login as superadmin.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Catch ex As Exception
                     MessageBox.Show(ex.Message)
                 End Try
             End Using
         End Using
     End Sub
+
 
     Private Sub btn_cancel_Click(sender As Object, e As EventArgs) Handles btn_cancel.Click
         ' Set LoginSuccessful property to False
@@ -63,9 +79,5 @@ Public Class login
 
     Private Sub txb_password_TextChanged(sender As Object, e As EventArgs) Handles txb_password.TextChanged
         txb_password.PasswordChar = "*"
-    End Sub
-
-    Private Sub cbx_privilege_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbx_privilege.SelectedIndexChanged
-
     End Sub
 End Class

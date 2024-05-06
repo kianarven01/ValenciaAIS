@@ -1,4 +1,6 @@
-﻿Public Class Form1
+﻿Imports System.IO
+
+Public Class Form1
 	' Create an instance of the login form
 	Private loginForm As New login()
 	Private WithEvents currentChildForm As Form
@@ -9,6 +11,24 @@
 				ctrl.Enabled = enable
 			End If
 		Next
+	End Sub
+
+	Private Sub EnableButtonsBasedOnUserType(ByVal userType As String)
+		If userType = "superadmin" Then
+			' If user is superadmin, disable the buttons
+			btn_transaction.Enabled = False
+			btn_supplier.Enabled = False
+			btn_product.Enabled = False
+			btn_vehicle.Enabled = False
+			btn_stores.Enabled = False
+		Else
+			' If user is not superadmin, enable the buttons
+			btn_transaction.Enabled = True
+			btn_supplier.Enabled = True
+			btn_product.Enabled = True
+			btn_vehicle.Enabled = True
+			btn_stores.Enabled = True
+		End If
 	End Sub
 
 	'for panels
@@ -41,14 +61,33 @@
 	Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 		' Disable all controls initially
 		EnableControls(False)
+
 		' Show the login form
 		loginForm.ShowDialog()
+
 		' Check if login was successful before proceeding
 		If loginForm.LoginSuccessful Then
 			' Enable all controls if login is successful
 			EnableControls(True)
-			btn_settings.Enabled = (DBConnection.UserType = "admin")
-			childform(transaction)
+
+			' Check user type
+			Dim userType As String = DBConnection.UserType
+
+			' Enable or disable buttons based on user type
+			EnableButtonsBasedOnUserType(userType)
+			If userType = "superadmin" Then
+				lbl_company.Text = "Superadmin Mode"
+				btn_restore.Visible = True
+			Else
+				btn_restore.Visible = False
+			End If
+
+			' Start with transaction form if user is not superadmin
+			If userType <> "superadmin" Then
+				childform(transaction)
+				Dim backupManager As New DatabaseManager()
+				backupManager.BackupDatabase()
+			End If
 		Else
 			' Close the main form if login was not successful
 			Me.Close()
@@ -93,6 +132,30 @@
 	Private Sub btn_logout_Click(sender As Object, e As EventArgs) Handles btn_logout.Click
 		Me.Close()
 		Application.Restart()
+	End Sub
+
+	Private Sub btn_restore_Click(sender As Object, e As EventArgs) Handles btn_restore.Click
+		' Prompt the user to confirm restoration
+		Dim result As DialogResult = MessageBox.Show("Are you sure you want to restore the database?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+
+		If result = DialogResult.Yes Then
+			' Proceed with restoration
+			Dim backupFolderPath As String = Path.Combine(Application.StartupPath, "Backups")
+			Dim openFileDialog As New OpenFileDialog()
+			openFileDialog.InitialDirectory = backupFolderPath
+			openFileDialog.Filter = "SQL Files (*.sql)|*.sql|All Files (*.*)|*.*"
+			openFileDialog.FilterIndex = 1
+			openFileDialog.RestoreDirectory = True
+
+			If openFileDialog.ShowDialog() = DialogResult.OK Then
+				' Get the selected file path
+				Dim backupFilePath As String = openFileDialog.FileName
+
+				' Restore the database
+				Dim databaseManager As New DatabaseManager()
+				databaseManager.RestoreDatabase(backupFilePath)
+			End If
+		End If
 	End Sub
 
 

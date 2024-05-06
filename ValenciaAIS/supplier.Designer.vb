@@ -94,6 +94,7 @@ Partial Class supplier
 		dgv_slist.ReadOnly = True
 		dgv_slist.RowHeadersVisible = False
 		dgv_slist.RowHeadersWidth = 51
+		dgv_slist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
 		dgv_slist.Size = New Size(783, 188)
 		dgv_slist.TabIndex = 22
 		' 

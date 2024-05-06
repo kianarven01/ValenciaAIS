@@ -154,6 +154,7 @@ Partial Class stores
 		dgv_stlist.ReadOnly = True
 		dgv_stlist.RowHeadersVisible = False
 		dgv_stlist.RowHeadersWidth = 51
+		dgv_stlist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
 		dgv_stlist.Size = New Size(1143, 226)
 		dgv_stlist.TabIndex = 47
 		' 
