@@ -34,6 +34,7 @@ Partial Class login
 		btn_login = New Button()
 		btn_cancel = New Button()
 		Panel3 = New Panel()
+		cbx_privilege = New ComboBox()
 		PictureBox3 = New PictureBox()
 		CType(pcb_login, ComponentModel.ISupportInitialize).BeginInit()
 		Panel1.SuspendLayout()
@@ -147,11 +148,21 @@ Partial Class login
 		' Panel3
 		' 
 		Panel3.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
+		Panel3.Controls.Add(cbx_privilege)
 		Panel3.Controls.Add(PictureBox3)
 		Panel3.Location = New Point(76, 310)
 		Panel3.Name = "Panel3"
 		Panel3.Size = New Size(323, 58)
 		Panel3.TabIndex = 5
+		' 
+		' cbx_privilege
+		' 
+		cbx_privilege.AutoCompleteCustomSource.AddRange(New String() {"admin", "user"})
+		cbx_privilege.FormattingEnabled = True
+		cbx_privilege.Location = New Point(59, 16)
+		cbx_privilege.Name = "cbx_privilege"
+		cbx_privilege.Size = New Size(251, 28)
+		cbx_privilege.TabIndex = 4
 		' 
 		' PictureBox3
 		' 
@@ -181,7 +192,6 @@ Partial Class login
 		MinimizeBox = False
 		Name = "login"
 		StartPosition = FormStartPosition.CenterScreen
-		Text = "Login"
 		CType(pcb_login, ComponentModel.ISupportInitialize).EndInit()
 		Panel1.ResumeLayout(False)
 		Panel1.PerformLayout()
@@ -207,4 +217,5 @@ Partial Class login
 	Friend WithEvents btn_cancel As Button
 	Friend WithEvents Panel3 As Panel
 	Friend WithEvents PictureBox3 As PictureBox
+	Friend WithEvents cbx_privilege As ComboBox
 End Class
