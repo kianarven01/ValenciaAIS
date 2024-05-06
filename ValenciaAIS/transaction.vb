@@ -511,7 +511,7 @@ Public Class transaction
 			cbx_stname.SelectedIndex = -1
 			cbx_payment.SelectedIndex = -1
 			cbx_payment.SetPlaceholder("Select Payment Method") ' Reset placeholder
-
+			LoadInvoices()
 		Catch ex As Exception
 			' Show an error message if an exception occurs
 			MessageBox.Show($"An error occurred while generating the receipt: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -652,38 +652,48 @@ Public Class transaction
 	End Sub
 
 	Private Sub GeneratePDF(invoiceID As Integer)
-		' Create a file name for the PDF
-		Dim fileName As String = $"Invoice_{invoiceID}.pdf"
-
 		Try
-			' Specify the file path for the PDF receipt
-			Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
-			Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
-
-			' Check if the receipts folder exists, if not, create it
-			If Not Directory.Exists(receiptsFolderPath) Then
-				Directory.CreateDirectory(receiptsFolderPath)
-			End If
-
-			Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
-
 			' Open a MySqlConnection using the connection string from the DBConnection module
 			Using connection As MySqlConnection = strconnection()
 				' Define your SQL query to fetch invoice details along with product details
 				Dim query As String = "SELECT i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
-						"ii.product_id, p.prod_name, ii.format, ii.total_price, SUM(ii.quantity) AS total_quantity " &
-						"FROM invoices i " &
-						"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
-						"JOIN product p ON ii.product_id = p.productID " &
-						"JOIN store s ON i.store_id = s.storeID " &
-						$"WHERE i.invoice_id = {invoiceID} " &
-						"GROUP BY i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
-						"ii.product_id, p.prod_name, ii.format, ii.total_price"
+					"ii.product_id, p.prod_name, ii.format, ii.total_price, SUM(ii.quantity) AS total_quantity " &
+					"FROM invoices i " &
+					"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
+					"JOIN product p ON ii.product_id = p.productID " &
+					"JOIN store s ON i.store_id = s.storeID " &
+					$"WHERE i.invoice_id = {invoiceID} " &
+					"GROUP BY i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
+					"ii.product_id, p.prod_name, ii.format, ii.total_price"
 
 				' Create a MySqlCommand object
 				Using command As New MySqlCommand(query, connection)
 					' Open the connection
 					connection.Open()
+
+					' Retrieve invoice details from the reader
+					Dim storeName As String = ""
+					Dim transactionDate As String = ""
+					Using reader As MySqlDataReader = command.ExecuteReader()
+						If reader.Read() Then
+							storeName = reader.GetString("store_name")
+							transactionDate = reader.GetDateTime("transaction_date").ToString("yyyyMMdd_HHmmss")
+						End If
+					End Using
+
+					' Create a file name for the PDF
+					Dim fileName As String = $"Invoice_{invoiceID}_{storeName}_{transactionDate}.pdf"
+
+					' Specify the file path for the PDF receipt
+					Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
+					Dim invoiceFolderPath As String = Path.Combine(projectDirectory, "invoice")
+
+					' Check if the invoice folder exists, if not, create it
+					If Not Directory.Exists(invoiceFolderPath) Then
+						Directory.CreateDirectory(invoiceFolderPath)
+					End If
+
+					Dim filePath As String = Path.Combine(invoiceFolderPath, fileName)
 
 					' Create a new iTextSharp Document
 					Dim document As New iTextSharp.text.Document()
@@ -697,17 +707,11 @@ Public Class transaction
 					' Add invoice details to the PDF
 					Using reader As MySqlDataReader = command.ExecuteReader()
 						If reader.Read() Then
-							' Retrieve invoice details from the reader
-							Dim storeName As String = reader.GetString("store_name")
-							Dim paymentMethod As String = reader.GetString("payment_method")
-							Dim transactionDate As DateTime = reader.GetDateTime("transaction_date")
-							Dim invoiceIDFromDB As Integer = reader.GetInt32("invoice_id")
-
 							' Add invoice details to the PDF
-							document.Add(New Paragraph($"Invoice ID: {invoiceIDFromDB}"))
+							document.Add(New Paragraph($"Invoice ID: {invoiceID}"))
 							document.Add(New Paragraph($"Store Name: {storeName}"))
-							document.Add(New Paragraph($"Payment Method: {paymentMethod}"))
-							document.Add(New Paragraph($"Transaction Date: {transactionDate}"))
+							document.Add(New Paragraph($"Payment Method: {reader.GetString("payment_method")}"))
+							document.Add(New Paragraph($"Transaction Date: {reader.GetDateTime("transaction_date").ToString("MM/dd/yyyy HH:mm:ss")}"))
 							document.Add(New Paragraph(Environment.NewLine))
 
 							' Create a table for product details
@@ -767,5 +771,23 @@ Public Class transaction
 	End Sub
 
 
+
+	Private Sub btn_showInvoices_Click(sender As Object, e As EventArgs) Handles btn_showInvoices.Click
+		Try
+			' Specify the path to the receipt folder
+			Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
+			Dim invoiceFolderPath As String = Path.Combine(projectDirectory, "invoice")
+
+			' Check if the receipts folder exists
+			If Directory.Exists(invoiceFolderPath) Then
+				' Open the folder using the default file explorer
+				Process.Start("explorer.exe", invoiceFolderPath)
+			Else
+				MessageBox.Show("The invoice folder does not exist.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+			End If
+		Catch ex As Exception
+			MessageBox.Show($"An error occurred while opening the invoice folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		End Try
+	End Sub
 
 End Class
