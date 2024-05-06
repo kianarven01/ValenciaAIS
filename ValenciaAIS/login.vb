@@ -21,7 +21,7 @@ Public Class login
         End If
 
         ' Check if the username and password match the superadmin credentials
-        If txb_username.Text.ToLower() = "superadmin" AndAlso txb_password.Text.ToLower() = "superadmin" Then
+        If txb_username.Text.ToLower() = "superadmin" AndAlso txb_password.Text.ToLower() = "helloworld" Then
             ' Set UserType to "superadmin"
             DBConnection.UserType = "superadmin"
             ' Set LoginSuccessful property to True
