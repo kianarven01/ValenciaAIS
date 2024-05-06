@@ -80,6 +80,7 @@ Public Class transaction
 		InitializeLoadedProductDataGridView()
 		cbx_stname.SetPlaceholder("Select Store")
 		ResizeListViewColumns()
+		LoadInvoices()
 	End Sub
 
 
@@ -603,5 +604,168 @@ Public Class transaction
 			MessageBox.Show($"An error occurred while opening the receipt folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End Try
 	End Sub
+
+	Private Sub LoadInvoices()
+		' Clear existing data in the DataGridView
+		dgv_invoice.Rows.Clear()
+
+		' Create a MySqlConnection using the connection string from the DBConnection module
+		Using connection As MySqlConnection = strconnection()
+			' Define your SQL query
+			Dim query As String = "SELECT i.invoice_id, s.store_name, i.payment_method, i.transaction_date " &
+							  "FROM invoices i " &
+							  "JOIN store s ON i.store_id = s.storeID"
+
+			' Create a MySqlCommand object
+			Using command As New MySqlCommand(query, connection)
+				' Open the connection
+				connection.Open()
+
+				' Execute the command and create a MySqlDataReader
+				Using reader As MySqlDataReader = command.ExecuteReader()
+					' Loop through each row in the result set
+					While reader.Read()
+						' Retrieve data from the reader
+						Dim invoiceID As Integer = reader.GetInt32("invoice_id")
+						Dim storeName As String = reader.GetString("store_name")
+						Dim paymentMethod As String = reader.GetString("payment_method")
+						Dim transactionDate As DateTime = reader.GetDateTime("transaction_date")
+
+						' Add a new row to the DataGridView
+						dgv_invoice.Rows.Add(invoiceID, storeName, paymentMethod, transactionDate)
+					End While
+				End Using
+			End Using
+		End Using
+	End Sub
+
+
+	Private Sub dgv_invoice_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_invoice.CellDoubleClick
+		' Check if the double-clicked cell is not the header cell
+		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
+			' Retrieve the invoice ID from the selected row
+			Dim invoiceID As Integer = Convert.ToInt32(dgv_invoice.Rows(e.RowIndex).Cells("InvoiceID").Value)
+
+			' Generate the PDF based on the selected invoice ID
+			GeneratePDF(invoiceID)
+		End If
+	End Sub
+
+	Private Sub GeneratePDF(invoiceID As Integer)
+		' Create a file name for the PDF
+		Dim fileName As String = $"Invoice_{invoiceID}.pdf"
+
+		Try
+			' Specify the file path for the PDF receipt
+			Dim projectDirectory As String = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName
+			Dim receiptsFolderPath As String = Path.Combine(projectDirectory, "receipts")
+
+			' Check if the receipts folder exists, if not, create it
+			If Not Directory.Exists(receiptsFolderPath) Then
+				Directory.CreateDirectory(receiptsFolderPath)
+			End If
+
+			Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
+
+			' Open a MySqlConnection using the connection string from the DBConnection module
+			Using connection As MySqlConnection = strconnection()
+				' Define your SQL query to fetch invoice details along with product details
+				Dim query As String = "SELECT i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
+						"ii.product_id, p.prod_name, ii.format, ii.total_price, SUM(ii.quantity) AS total_quantity " &
+						"FROM invoices i " &
+						"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
+						"JOIN product p ON ii.product_id = p.productID " &
+						"JOIN store s ON i.store_id = s.storeID " &
+						$"WHERE i.invoice_id = {invoiceID} " &
+						"GROUP BY i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
+						"ii.product_id, p.prod_name, ii.format, ii.total_price"
+
+				' Create a MySqlCommand object
+				Using command As New MySqlCommand(query, connection)
+					' Open the connection
+					connection.Open()
+
+					' Create a new iTextSharp Document
+					Dim document As New iTextSharp.text.Document()
+
+					' Create a PdfWriter to write to the specified file path
+					Dim writer As PdfWriter = PdfWriter.GetInstance(document, New FileStream(filePath, FileMode.Create))
+
+					' Open the document for writing
+					document.Open()
+
+					' Add invoice details to the PDF
+					Using reader As MySqlDataReader = command.ExecuteReader()
+						If reader.Read() Then
+							' Retrieve invoice details from the reader
+							Dim storeName As String = reader.GetString("store_name")
+							Dim paymentMethod As String = reader.GetString("payment_method")
+							Dim transactionDate As DateTime = reader.GetDateTime("transaction_date")
+							Dim invoiceIDFromDB As Integer = reader.GetInt32("invoice_id")
+
+							' Add invoice details to the PDF
+							document.Add(New Paragraph($"Invoice ID: {invoiceIDFromDB}"))
+							document.Add(New Paragraph($"Store Name: {storeName}"))
+							document.Add(New Paragraph($"Payment Method: {paymentMethod}"))
+							document.Add(New Paragraph($"Transaction Date: {transactionDate}"))
+							document.Add(New Paragraph(Environment.NewLine))
+
+							' Create a table for product details
+							Dim table As New PdfPTable(5) ' Number of columns in the table
+							table.WidthPercentage = 100 ' Make the table fill the width of the document
+							table.HorizontalAlignment = Element.ALIGN_LEFT ' Align the table to the left
+
+							' Add headers to the table
+							table.AddCell("Product Name")
+							table.AddCell("Format")
+							table.AddCell("Total Quantity")
+							table.AddCell("Unit Price")
+							table.AddCell("Total Price")
+
+							Dim totalSum As Decimal = 0 ' Initialize total sum variable
+
+							' Read product details from the reader and add them to the table
+							Do
+								Dim productName As String = reader.GetString("prod_name")
+								Dim format As String = reader.GetString("format")
+								Dim totalQuantity As Integer = reader.GetInt32("total_quantity")
+								Dim unitPrice As Decimal = reader.GetDecimal("total_price") / totalQuantity
+								Dim totalPrice As Decimal = reader.GetDecimal("total_price")
+
+								' Add product details to the table
+								table.AddCell(productName)
+								table.AddCell(format)
+								table.AddCell(totalQuantity.ToString())
+								table.AddCell(unitPrice.ToString("F2")) ' Display unit price without currency symbol
+								table.AddCell(totalPrice.ToString("F2")) ' Display total price without currency symbol
+
+								' Add total price to the total sum
+								totalSum += totalPrice
+							Loop While reader.Read()
+							Dim fontPath As String = "C:\Windows\Fonts\Arial.ttf"
+							Dim baseFont As BaseFont = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED)
+							Dim font As New Font(baseFont, 12, Font.NORMAL)
+
+							' Add the table to the document
+							document.Add(table)
+							Dim totalSumParagraph As New Paragraph($"Total Sum: ₱{totalSum.ToString("F2")}", font)
+							document.Add(totalSumParagraph)
+						End If
+					End Using
+
+					' Close the document
+					document.Close()
+
+					' Show a success message
+					MessageBox.Show($"PDF generated successfully. Saved as: {filePath}", "PDF Generated", MessageBoxButtons.OK, MessageBoxIcon.Information)
+				End Using
+			End Using
+		Catch ex As Exception
+			' Show an error message if an exception occurs
+			MessageBox.Show($"An error occurred while generating the PDF: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+		End Try
+	End Sub
+
+
 
 End Class

@@ -50,7 +50,13 @@ Partial Class transaction
 		lsv_transaction = New ListView()
 		dtp_transaction = New DateTimePicker()
 		btn_showReceipt = New Button()
+		dgv_invoice = New DataGridView()
+		InvoiceID = New DataGridViewTextBoxColumn()
+		Column2 = New DataGridViewTextBoxColumn()
+		Column3 = New DataGridViewTextBoxColumn()
+		Column4 = New DataGridViewTextBoxColumn()
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).BeginInit()
+		CType(dgv_invoice, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
 		' 
 		' lbl_transaction
@@ -139,7 +145,7 @@ Partial Class transaction
 		txb_total.BackColor = Color.WhiteSmoke
 		txb_total.BorderStyle = BorderStyle.None
 		txb_total.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_total.Location = New Point(908, 526)
+		txb_total.Location = New Point(901, 825)
 		txb_total.Name = "txb_total"
 		txb_total.Size = New Size(160, 27)
 		txb_total.TabIndex = 45
@@ -149,7 +155,7 @@ Partial Class transaction
 		lbl_total.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		lbl_total.AutoSize = True
 		lbl_total.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		lbl_total.Location = New Point(835, 524)
+		lbl_total.Location = New Point(828, 823)
 		lbl_total.Name = "lbl_total"
 		lbl_total.Size = New Size(67, 31)
 		lbl_total.TabIndex = 46
@@ -157,7 +163,7 @@ Partial Class transaction
 		' 
 		' btn_addItem
 		' 
-		btn_addItem.Location = New Point(653, 520)
+		btn_addItem.Location = New Point(653, 556)
 		btn_addItem.Name = "btn_addItem"
 		btn_addItem.Size = New Size(133, 28)
 		btn_addItem.TabIndex = 47
@@ -166,7 +172,7 @@ Partial Class transaction
 		' 
 		' btn_generate
 		' 
-		btn_generate.Location = New Point(1162, 463)
+		btn_generate.Location = New Point(1162, 770)
 		btn_generate.Name = "btn_generate"
 		btn_generate.Size = New Size(110, 28)
 		btn_generate.TabIndex = 48
@@ -175,7 +181,7 @@ Partial Class transaction
 		' 
 		' btn_removeItem
 		' 
-		btn_removeItem.Location = New Point(835, 463)
+		btn_removeItem.Location = New Point(836, 770)
 		btn_removeItem.Name = "btn_removeItem"
 		btn_removeItem.Size = New Size(110, 28)
 		btn_removeItem.TabIndex = 49
@@ -215,7 +221,7 @@ Partial Class transaction
 		dgv_lplist.RowHeadersVisible = False
 		dgv_lplist.RowHeadersWidth = 51
 		dgv_lplist.SelectionMode = DataGridViewSelectionMode.FullRowSelect
-		dgv_lplist.Size = New Size(740, 214)
+		dgv_lplist.Size = New Size(740, 250)
 		dgv_lplist.TabIndex = 58
 		' 
 		' loaded_productID
@@ -283,7 +289,7 @@ Partial Class transaction
 		lsv_transaction.GridLines = True
 		lsv_transaction.Location = New Point(836, 100)
 		lsv_transaction.Name = "lsv_transaction"
-		lsv_transaction.Size = New Size(436, 343)
+		lsv_transaction.Size = New Size(436, 664)
 		lsv_transaction.TabIndex = 39
 		lsv_transaction.UseCompatibleStateImageBehavior = False
 		lsv_transaction.View = View.Details
@@ -297,19 +303,69 @@ Partial Class transaction
 		' 
 		' btn_showReceipt
 		' 
-		btn_showReceipt.Location = New Point(46, 520)
+		btn_showReceipt.Location = New Point(46, 556)
 		btn_showReceipt.Name = "btn_showReceipt"
 		btn_showReceipt.Size = New Size(133, 28)
 		btn_showReceipt.TabIndex = 59
 		btn_showReceipt.Text = "Show Receipts"
 		btn_showReceipt.UseVisualStyleBackColor = True
 		' 
+		' dgv_invoice
+		' 
+		dgv_invoice.AllowUserToAddRows = False
+		dgv_invoice.AllowUserToDeleteRows = False
+		dgv_invoice.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+		dgv_invoice.BackgroundColor = Color.FromArgb(CByte(128), CByte(64), CByte(64))
+		dgv_invoice.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+		dgv_invoice.Columns.AddRange(New DataGridViewColumn() {InvoiceID, Column2, Column3, Column4})
+		dgv_invoice.Location = New Point(51, 602)
+		dgv_invoice.Name = "dgv_invoice"
+		dgv_invoice.ReadOnly = True
+		dgv_invoice.RowHeadersVisible = False
+		dgv_invoice.RowHeadersWidth = 51
+		dgv_invoice.SelectionMode = DataGridViewSelectionMode.FullRowSelect
+		dgv_invoice.Size = New Size(740, 250)
+		dgv_invoice.TabIndex = 60
+		' 
+		' InvoiceID
+		' 
+		InvoiceID.DataPropertyName = "invoice_id"
+		InvoiceID.HeaderText = "Invoice ID"
+		InvoiceID.MinimumWidth = 6
+		InvoiceID.Name = "InvoiceID"
+		InvoiceID.ReadOnly = True
+		' 
+		' Column2
+		' 
+		Column2.DataPropertyName = "store_name"
+		Column2.HeaderText = "Store"
+		Column2.MinimumWidth = 6
+		Column2.Name = "Column2"
+		Column2.ReadOnly = True
+		' 
+		' Column3
+		' 
+		Column3.DataPropertyName = "payment_method"
+		Column3.HeaderText = "Payment"
+		Column3.MinimumWidth = 6
+		Column3.Name = "Column3"
+		Column3.ReadOnly = True
+		' 
+		' Column4
+		' 
+		Column4.DataPropertyName = "transaction_date"
+		Column4.HeaderText = "Date"
+		Column4.MinimumWidth = 6
+		Column4.Name = "Column4"
+		Column4.ReadOnly = True
+		' 
 		' transaction
 		' 
 		AutoScaleDimensions = New SizeF(8F, 20F)
 		AutoScaleMode = AutoScaleMode.Font
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
-		ClientSize = New Size(1354, 733)
+		ClientSize = New Size(1580, 926)
+		Controls.Add(dgv_invoice)
 		Controls.Add(btn_showReceipt)
 		Controls.Add(dgv_lplist)
 		Controls.Add(dtp_transaction)
@@ -333,6 +389,7 @@ Partial Class transaction
 		Name = "transaction"
 		Text = "transaction"
 		CType(dgv_lplist, ComponentModel.ISupportInitialize).EndInit()
+		CType(dgv_invoice, ComponentModel.ISupportInitialize).EndInit()
 		ResumeLayout(False)
 		PerformLayout()
 	End Sub
@@ -365,4 +422,9 @@ Partial Class transaction
 	Friend WithEvents lsv_transaction As ListView
 	Friend WithEvents dtp_transaction As DateTimePicker
 	Friend WithEvents btn_showReceipt As Button
+	Friend WithEvents dgv_invoice As DataGridView
+	Friend WithEvents InvoiceID As DataGridViewTextBoxColumn
+	Friend WithEvents Column2 As DataGridViewTextBoxColumn
+	Friend WithEvents Column3 As DataGridViewTextBoxColumn
+	Friend WithEvents Column4 As DataGridViewTextBoxColumn
 End Class
