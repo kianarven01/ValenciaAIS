@@ -371,6 +371,7 @@ Public Class transaction
 		txb_total.Text = $"₱{totalSum:F}" ' Assuming txb_total is the name of your TextBox
 	End Sub
 
+
 	Private Sub btn_generate_Click(sender As Object, e As EventArgs) Handles btn_generate.Click
 		' Check if both ComboBoxes are not selected and the ListView is empty
 		If (cbx_stname.SelectedIndex = -1 AndAlso cbx_payment.SelectedIndex = -1) AndAlso lsv_transaction.Items.Count = 0 Then
@@ -392,7 +393,8 @@ Public Class transaction
 
 		' Get the selected store name and transaction date
 		Dim storeName As String = cbx_stname.SelectedItem.ToString()
-		Dim transactionDate As String = dtp_transaction.Value.ToString("yyyy-MM-dd HH:mm:ss")
+		Dim transactionDate As String = DateTime.Today.ToString("yyyy-MM-dd")
+
 
 		' Define SQL queries to insert data into the invoices and invoice_items tables
 		Dim insertInvoiceQuery As String = $"INSERT INTO invoices (store_id, payment_method, transaction_date) VALUES ((SELECT storeID FROM store WHERE store_name = '{storeName}'), '{cbx_payment.SelectedItem}', '{transactionDate}')"
@@ -419,7 +421,8 @@ Public Class transaction
 			End If
 
 			' Generate file name with timestamp
-			Dim fileName As String = $"{storeName}_{transactionDate.Replace(":", "").Replace("-", "").Replace(" ", "_")}.pdf"
+			Dim timeStamp As String = DateTime.Now.ToString("yyyyMMdd_HHmmss")
+			Dim fileName As String = $"{storeName}_{timeStamp}.pdf"
 			Dim filePath As String = Path.Combine(receiptsFolderPath, fileName)
 
 			' Create a new iTextSharp Document
@@ -676,13 +679,13 @@ Public Class transaction
 			Using connection As MySqlConnection = strconnection()
 				' Define your SQL query to fetch invoice details along with product details
 				Dim query As String = "SELECT i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
-"ii.product_id, p.prod_name, ii.format, ii.quantity, p.prod_price AS unit_price, " &
-"(ii.quantity * p.prod_price) AS total_price " &
-"FROM invoices i " &
-"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
-"JOIN product p ON ii.product_id = p.productID " &
-"JOIN store s ON i.store_id = s.storeID " &
-$"WHERE i.invoice_id = {invoiceID}"
+										"ii.product_id, p.prod_name, ii.format, ii.quantity, p.prod_price AS unit_price, " &
+										"(ii.quantity * p.prod_price) AS total_price " &
+										"FROM invoices i " &
+										"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
+										"JOIN product p ON ii.product_id = p.productID " &
+										"JOIN store s ON i.store_id = s.storeID " &
+										$"WHERE i.invoice_id = {invoiceID}"
 
 
 				' Create a MySqlCommand object

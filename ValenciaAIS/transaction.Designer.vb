@@ -301,6 +301,7 @@ Partial Class transaction
 		dtp_transaction.Name = "dtp_transaction"
 		dtp_transaction.Size = New Size(367, 27)
 		dtp_transaction.TabIndex = 52
+		dtp_transaction.Value = New Date(2024, 5, 8, 1, 15, 24, 0)
 		' 
 		' btn_showReceipt
 		' 
