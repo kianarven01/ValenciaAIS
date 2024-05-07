@@ -98,7 +98,7 @@ Public Class vehicle
 	End Sub
 
 
-	Public Sub AssociateProductWithVehicle(productId As Integer, vehicleCode As String, quantity As Integer)
+	Public Sub AssociateProductWithVehicle(productId As Integer, vehicleCode As String, quantity As Double)
 		' Check if the product already exists in loaded_product
 		Dim queryCheckExistingProduct = $"SELECT COUNT(*) FROM loaded_product WHERE productID = {productId} AND vehicle_code = '{vehicleCode}'"
 		Dim existingProductCount = 0
@@ -123,6 +123,7 @@ Public Class vehicle
 		End If
 		RaiseEvent LoadedProductDataChanged(Me, EventArgs.Empty)
 	End Sub
+
 
 	Private Function GetProductIdByName(ByVal productName As String) As Integer
 		Dim productId As Integer = -1 ' Default value if product is not found
@@ -149,7 +150,7 @@ Public Class vehicle
 			Dim selectedRow = dgv_lplist.Rows(rowIndex)
 			Dim loadedProductId As Integer = Convert.ToInt32(selectedRow.Cells("loaded_productID").Value)
 			Dim productName As String = Convert.ToString(selectedRow.Cells("prod_name").Value)
-			Dim loadedStock As Integer = Convert.ToInt32(selectedRow.Cells("loaded_stock").Value)
+			Dim loadedStock As Decimal = Convert.ToDecimal(selectedRow.Cells("loaded_stock").Value) ' Use Decimal data type
 
 			' Fetch the productId based on the selected product name
 			Dim productId As Integer = GetProductIdByName(productName)
@@ -160,7 +161,7 @@ Public Class vehicle
 				ExecuteNonQueryWithoutPrompt(queryRemoveItem)
 
 				' Update the product stock by adding the removed quantity
-				Dim queryAddStock As String = $"UPDATE product SET prod_stock = prod_stock + {loadedStock} WHERE productID = {productId}"
+				Dim queryAddStock As String = $"UPDATE product SET prod_stock = prod_stock + {loadedStock} WHERE productID = {productId}" ' Add loaded stock back to product stock
 				ExecuteNonQueryWithoutPrompt(queryAddStock)
 
 				' Raise the LoadedProductDataChanged event to trigger reload
@@ -181,6 +182,7 @@ Public Class vehicle
 			MessageBox.Show("Please select an item to remove.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End If
 	End Sub
+
 
 
 	'CRUD

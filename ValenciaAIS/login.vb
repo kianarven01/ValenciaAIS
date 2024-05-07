@@ -33,12 +33,14 @@ Public Class login
             Return
         End If
 
+        Dim hashedPassword As String = PasswordHasher.HashPassword(txb_password.Text)
+
         ' Your login code for other users here
         Dim sql As String = "SELECT * FROM user WHERE username = @username AND password = @password AND user_type = @userType"
         Using connection As MySqlConnection = DBConnection.strconnection()
             Using adapter As New MySqlDataAdapter(sql, connection)
                 adapter.SelectCommand.Parameters.AddWithValue("@username", txb_username.Text)
-                adapter.SelectCommand.Parameters.AddWithValue("@password", txb_password.Text)
+                adapter.SelectCommand.Parameters.AddWithValue("@password", hashedPassword)
                 adapter.SelectCommand.Parameters.AddWithValue("@userType", cbx_privilege.SelectedItem.ToString())
                 Dim dt As New DataTable()
                 Try

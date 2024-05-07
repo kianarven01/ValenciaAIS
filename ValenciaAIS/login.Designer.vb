@@ -158,6 +158,7 @@ Partial Class login
 		' cbx_privilege
 		' 
 		cbx_privilege.AutoCompleteCustomSource.AddRange(New String() {"admin", "user"})
+		cbx_privilege.DropDownStyle = ComboBoxStyle.DropDownList
 		cbx_privilege.FormattingEnabled = True
 		cbx_privilege.Location = New Point(59, 16)
 		cbx_privilege.Name = "cbx_privilege"

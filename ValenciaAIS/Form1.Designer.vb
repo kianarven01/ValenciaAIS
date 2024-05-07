@@ -146,7 +146,7 @@ Partial Class Form1
 		Controls.Add(btn_product)
 		Controls.Add(btn_supplier)
 		Controls.Add(btn_transaction)
-		FormBorderStyle = FormBorderStyle.FixedToolWindow
+		FormBorderStyle = FormBorderStyle.None
 		Name = "Form1"
 		StartPosition = FormStartPosition.CenterScreen
 		Text = "Valencia AIS"

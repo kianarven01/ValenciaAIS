@@ -238,7 +238,7 @@ Public Class transaction
 			Dim quantityInputForm As New QuantityInputForm()
 			If quantityInputForm.ShowDialog() = DialogResult.OK Then
 				' Retrieve the quantity from the popup window
-				Dim quantity As Integer = quantityInputForm.Quantity
+				Dim quantity As Decimal = quantityInputForm.Quantity ' Change type to Decimal
 
 				' Check if the entered quantity exceeds the available stock
 				If quantity > loadedStock Then
@@ -257,8 +257,8 @@ Public Class transaction
 				Dim existingItem As ListViewItem = lsv_transaction.FindItemWithText(productName)
 				If existingItem IsNot Nothing Then
 					' Update the quantity of the existing item
-					Dim currentQuantity As Integer = Convert.ToInt32(existingItem.SubItems(1).Text)
-					Dim newQuantity As Integer = currentQuantity + quantity
+					Dim currentQuantity As Decimal = Convert.ToDecimal(existingItem.SubItems(1).Text)
+					Dim newQuantity As Decimal = currentQuantity + quantity
 					existingItem.SubItems(1).Text = newQuantity.ToString()
 
 					' Recalculate the total price based on the updated quantity
@@ -269,7 +269,10 @@ Public Class transaction
 					Dim item As New ListViewItem(productName)
 					item.SubItems.Add(quantity.ToString())
 					item.SubItems.Add(format)
-					item.SubItems.Add((price * quantity).ToString()) ' Calculate total price and add to ListView
+
+					' Calculate total price based on the fractional quantity
+					Dim totalPrice As Decimal = price * quantity
+					item.SubItems.Add(totalPrice.ToString()) ' Add total price to ListView
 					lsv_transaction.Items.Add(item)
 					UpdateTotalSum()
 				End If
@@ -282,7 +285,7 @@ Public Class transaction
 			' Get the selected item in lsv_transaction
 			Dim selectedItem As ListViewItem = lsv_transaction.SelectedItems(0)
 			Dim productName As String = selectedItem.SubItems(0).Text
-			Dim quantity As Integer = Convert.ToInt32(selectedItem.SubItems(1).Text)
+			Dim quantity As Decimal = Convert.ToDecimal(selectedItem.SubItems(1).Text) ' Use Decimal data type
 			Dim format As String = selectedItem.SubItems(2).Text
 			Dim price As Decimal = Convert.ToDecimal(selectedItem.SubItems(3).Text)
 
@@ -295,7 +298,7 @@ Public Class transaction
 					ExecuteNonQueryWithoutPrompt(queryAddStock)
 
 					' Update the loaded stock in the DataGridView
-					Dim updatedStock As Integer = Convert.ToInt32(row.Cells("loaded_stock").Value) + quantity
+					Dim updatedStock As Decimal = Convert.ToDecimal(row.Cells("loaded_stock").Value) + quantity ' Use Decimal data type
 					row.Cells("loaded_stock").Value = updatedStock
 					Exit For
 				End If
@@ -483,23 +486,39 @@ Public Class transaction
 			' Insert data into the invoice_items table for each item in the ListView
 			For Each item As ListViewItem In lsv_transaction.Items
 				Dim productName As String = item.SubItems(0).Text
-				Dim quantity As Integer = Convert.ToInt32(item.SubItems(1).Text)
-				Dim format As String = item.SubItems(2).Text
-				Dim totalPrice As Decimal = Decimal.Parse(item.SubItems(3).Text.Replace("₱", ""), CultureInfo.InvariantCulture)
+				Dim quantityDouble As Double
+				Dim quantity As Double ' Change the data type to Double to preserve decimal values
+				Dim format As String
+				Dim totalPrice As Decimal
 
-				' Get the product ID based on the product name
-				Dim productId As Integer = -1 ' Initialize product ID
-				cmd.CommandText = $"SELECT productID FROM product WHERE prod_name = '{productName}'"
-				Dim reader As MySqlDataReader = cmd.ExecuteReader()
-				If reader.Read() Then
-					productId = reader.GetInt32(0)
+				If Double.TryParse(item.SubItems(1).Text, quantityDouble) Then
+					quantity = quantityDouble
+					format = item.SubItems(2).Text
+					totalPrice = Decimal.Parse(item.SubItems(3).Text.Replace("₱", ""), Globalization.NumberStyles.Currency)
+					' Get the product ID based on the product name
+					Dim productId As Integer = -1 ' Initialize product ID
+					cmd.CommandText = $"SELECT productID FROM product WHERE prod_name = '{productName}'"
+					Dim reader As MySqlDataReader = cmd.ExecuteReader()
+					If reader.Read() Then
+						productId = reader.GetInt32(0)
+					End If
+					reader.Close()
+
+					' Insert data into the invoice_items table
+					Dim insertInvoiceItemQuery As String = $"INSERT INTO invoice_items (invoice_id, product_id, quantity, format, total_price) VALUES ({invoiceId}, {productId}, {quantity}, '{format}', {totalPrice})"
+					cmd.CommandText = insertInvoiceItemQuery
+					cmd.ExecuteNonQuery()
+				Else
+					' Handle the case where the quantity string cannot be parsed as a double
+					MessageBox.Show("Invalid quantity format: " & item.SubItems(1).Text, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+					Continue For ' Skip to the next iteration
 				End If
-				reader.Close()
 
-				' Insert data into the invoice_items table
-				Dim insertInvoiceItemQuery As String = $"INSERT INTO invoice_items (invoice_id, product_id, quantity, format, total_price) VALUES ({invoiceId}, {productId}, {quantity}, '{format}', {totalPrice})"
-				cmd.CommandText = insertInvoiceItemQuery
-				cmd.ExecuteNonQuery()
+				' Add item details to the table
+				table.AddCell(productName)
+				table.AddCell(quantity.ToString()) ' Use the quantity instead of quantityDouble
+				table.AddCell(format)
+				table.AddCell(totalPrice.ToString()) ' Use the converted totalPrice
 			Next
 
 			' Show a success message
@@ -657,14 +676,14 @@ Public Class transaction
 			Using connection As MySqlConnection = strconnection()
 				' Define your SQL query to fetch invoice details along with product details
 				Dim query As String = "SELECT i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
-					"ii.product_id, p.prod_name, ii.format, ii.total_price, SUM(ii.quantity) AS total_quantity " &
-					"FROM invoices i " &
-					"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
-					"JOIN product p ON ii.product_id = p.productID " &
-					"JOIN store s ON i.store_id = s.storeID " &
-					$"WHERE i.invoice_id = {invoiceID} " &
-					"GROUP BY i.invoice_id, s.store_name, i.payment_method, i.transaction_date, " &
-					"ii.product_id, p.prod_name, ii.format, ii.total_price"
+"ii.product_id, p.prod_name, ii.format, ii.quantity, p.prod_price AS unit_price, " &
+"(ii.quantity * p.prod_price) AS total_price " &
+"FROM invoices i " &
+"JOIN invoice_items ii ON i.invoice_id = ii.invoice_id " &
+"JOIN product p ON ii.product_id = p.productID " &
+"JOIN store s ON i.store_id = s.storeID " &
+$"WHERE i.invoice_id = {invoiceID}"
+
 
 				' Create a MySqlCommand object
 				Using command As New MySqlCommand(query, connection)
@@ -730,16 +749,17 @@ Public Class transaction
 
 							' Read product details from the reader and add them to the table
 							Do
+								' Read product details from the reader
 								Dim productName As String = reader.GetString("prod_name")
 								Dim format As String = reader.GetString("format")
-								Dim totalQuantity As Integer = reader.GetInt32("total_quantity")
-								Dim unitPrice As Decimal = reader.GetDecimal("total_price") / totalQuantity
+								Dim quantity As Double = reader.GetDouble("quantity")
+								Dim unitPrice As Decimal = reader.GetDecimal("unit_price")
 								Dim totalPrice As Decimal = reader.GetDecimal("total_price")
 
 								' Add product details to the table
 								table.AddCell(productName)
 								table.AddCell(format)
-								table.AddCell(totalQuantity.ToString())
+								table.AddCell(quantity.ToString())
 								table.AddCell(unitPrice.ToString("F2")) ' Display unit price without currency symbol
 								table.AddCell(totalPrice.ToString("F2")) ' Display total price without currency symbol
 
@@ -770,8 +790,6 @@ Public Class transaction
 		End Try
 	End Sub
 
-
-
 	Private Sub btn_showInvoices_Click(sender As Object, e As EventArgs) Handles btn_showInvoices.Click
 		Try
 			' Specify the path to the receipt folder
@@ -789,5 +807,6 @@ Public Class transaction
 			MessageBox.Show($"An error occurred while opening the invoice folder: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 		End Try
 	End Sub
+
 
 End Class
