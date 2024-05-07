@@ -651,10 +651,10 @@ Public Class transaction
 						Dim invoiceID As Integer = reader.GetInt32("invoice_id")
 						Dim storeName As String = reader.GetString("store_name")
 						Dim paymentMethod As String = reader.GetString("payment_method")
-						Dim transactionDate As DateTime = reader.GetDateTime("transaction_date")
+						Dim transactionDate As Date = reader.GetDateTime("transaction_date")
 
 						' Add a new row to the DataGridView
-						dgv_invoice.Rows.Add(invoiceID, storeName, paymentMethod, transactionDate)
+						dgv_invoice.Rows.Add(invoiceID, storeName, paymentMethod, transactionDate.ToString("yyyy-MM-dd"))
 					End While
 				End Using
 			End Using
