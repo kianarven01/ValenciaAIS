@@ -46,9 +46,7 @@ Partial Class vehicle
 		Label1 = New Label()
 		txb_search = New TextBox()
 		Label2 = New Label()
-		btn_generate = New Button()
 		btn_remove_item = New Button()
-		TextBox1 = New TextBox()
 		btn_new = New Button()
 		btn_delete = New Button()
 		btn_update = New Button()
@@ -58,7 +56,7 @@ Partial Class vehicle
 		DataGridViewTextBoxColumn2 = New DataGridViewTextBoxColumn()
 		DataGridViewTextBoxColumn3 = New DataGridViewTextBoxColumn()
 		DataGridViewTextBoxColumn4 = New DataGridViewTextBoxColumn()
-		TextBox2 = New TextBox()
+		txb_searchVehicle = New TextBox()
 		Label3 = New Label()
 		txb_vhcode = New TextBox()
 		CType(dgv_plist, ComponentModel.ISupportInitialize).BeginInit()
@@ -297,20 +295,11 @@ Partial Class vehicle
 		Label2.Anchor = AnchorStyles.Top Or AnchorStyles.Left Or AnchorStyles.Right
 		Label2.AutoSize = True
 		Label2.Font = New Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
-		Label2.Location = New Point(658, 427)
+		Label2.Location = New Point(658, 460)
 		Label2.Name = "Label2"
 		Label2.Size = New Size(193, 31)
 		Label2.TabIndex = 60
 		Label2.Text = "Loaded Products"
-		' 
-		' btn_generate
-		' 
-		btn_generate.Location = New Point(1185, 415)
-		btn_generate.Name = "btn_generate"
-		btn_generate.Size = New Size(110, 28)
-		btn_generate.TabIndex = 61
-		btn_generate.Text = "Load Product"
-		btn_generate.UseVisualStyleBackColor = True
 		' 
 		' btn_remove_item
 		' 
@@ -320,17 +309,6 @@ Partial Class vehicle
 		btn_remove_item.TabIndex = 62
 		btn_remove_item.Text = "Remove Item"
 		btn_remove_item.UseVisualStyleBackColor = True
-		' 
-		' TextBox1
-		' 
-		TextBox1.BackColor = Color.WhiteSmoke
-		TextBox1.BorderStyle = BorderStyle.None
-		TextBox1.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		TextBox1.Location = New Point(658, 461)
-		TextBox1.Name = "TextBox1"
-		TextBox1.PlaceholderText = "Search Here"
-		TextBox1.Size = New Size(268, 27)
-		TextBox1.TabIndex = 63
 		' 
 		' btn_new
 		' 
@@ -417,16 +395,16 @@ Partial Class vehicle
 		DataGridViewTextBoxColumn4.Name = "DataGridViewTextBoxColumn4"
 		DataGridViewTextBoxColumn4.ReadOnly = True
 		' 
-		' TextBox2
+		' txb_searchVehicle
 		' 
-		TextBox2.BackColor = Color.WhiteSmoke
-		TextBox2.BorderStyle = BorderStyle.None
-		TextBox2.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		TextBox2.Location = New Point(33, 308)
-		TextBox2.Name = "TextBox2"
-		TextBox2.PlaceholderText = "Search Vehicle"
-		TextBox2.Size = New Size(406, 27)
-		TextBox2.TabIndex = 69
+		txb_searchVehicle.BackColor = Color.WhiteSmoke
+		txb_searchVehicle.BorderStyle = BorderStyle.None
+		txb_searchVehicle.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+		txb_searchVehicle.Location = New Point(33, 308)
+		txb_searchVehicle.Name = "txb_searchVehicle"
+		txb_searchVehicle.PlaceholderText = "Search Vehicle"
+		txb_searchVehicle.Size = New Size(406, 27)
+		txb_searchVehicle.TabIndex = 69
 		' 
 		' Label3
 		' 
@@ -456,15 +434,13 @@ Partial Class vehicle
 		ClientSize = New Size(1354, 733)
 		Controls.Add(txb_vhcode)
 		Controls.Add(Label3)
-		Controls.Add(TextBox2)
+		Controls.Add(txb_searchVehicle)
 		Controls.Add(dgv_vlist)
 		Controls.Add(btn_new)
 		Controls.Add(btn_delete)
 		Controls.Add(btn_update)
 		Controls.Add(btn_create)
-		Controls.Add(TextBox1)
 		Controls.Add(btn_remove_item)
-		Controls.Add(btn_generate)
 		Controls.Add(Label2)
 		Controls.Add(txb_search)
 		Controls.Add(Label1)
@@ -508,9 +484,7 @@ Partial Class vehicle
 	Friend WithEvents Label1 As Label
 	Friend WithEvents txb_search As TextBox
 	Friend WithEvents Label2 As Label
-	Friend WithEvents btn_generate As Button
 	Friend WithEvents btn_remove_item As Button
-	Friend WithEvents TextBox1 As TextBox
 	Friend WithEvents loaded_productID As DataGridViewTextBoxColumn
 	Friend WithEvents prod_name As DataGridViewTextBoxColumn
 	Friend WithEvents prod_price As DataGridViewTextBoxColumn
@@ -521,7 +495,7 @@ Partial Class vehicle
 	Friend WithEvents btn_update As Button
 	Friend WithEvents btn_create As Button
 	Friend WithEvents dgv_vlist As DataGridView
-	Friend WithEvents TextBox2 As TextBox
+	Friend WithEvents txb_searchVehicle As TextBox
 	Friend WithEvents Label3 As Label
 	Friend WithEvents txb_vhcode As TextBox
 	Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn

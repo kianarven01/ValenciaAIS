@@ -25,14 +25,12 @@ Partial Class transaction
 		lbl_transaction = New Label()
 		cbx_stname = New ComboBox()
 		lbl_store = New Label()
-		txb_search = New TextBox()
 		lbl_payment = New Label()
 		cbx_payment = New ComboBox()
 		btn_stadd = New Button()
 		lbl_date = New Label()
 		txb_total = New TextBox()
 		lbl_total = New Label()
-		btn_addItem = New Button()
 		btn_generate = New Button()
 		btn_removeItem = New Button()
 		cbx_vehicle = New ComboBox()
@@ -89,17 +87,6 @@ Partial Class transaction
 		lbl_store.Size = New Size(70, 31)
 		lbl_store.TabIndex = 25
 		lbl_store.Text = "Store"
-		' 
-		' txb_search
-		' 
-		txb_search.BackColor = Color.WhiteSmoke
-		txb_search.BorderStyle = BorderStyle.None
-		txb_search.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-		txb_search.Location = New Point(46, 242)
-		txb_search.Name = "txb_search"
-		txb_search.PlaceholderText = "Search Product"
-		txb_search.Size = New Size(302, 27)
-		txb_search.TabIndex = 38
 		' 
 		' lbl_payment
 		' 
@@ -161,15 +148,6 @@ Partial Class transaction
 		lbl_total.Size = New Size(67, 31)
 		lbl_total.TabIndex = 46
 		lbl_total.Text = "Total"
-		' 
-		' btn_addItem
-		' 
-		btn_addItem.Location = New Point(653, 531)
-		btn_addItem.Name = "btn_addItem"
-		btn_addItem.Size = New Size(133, 28)
-		btn_addItem.TabIndex = 47
-		btn_addItem.Text = "Add Item"
-		btn_addItem.UseVisualStyleBackColor = True
 		' 
 		' btn_generate
 		' 
@@ -385,7 +363,6 @@ Partial Class transaction
 		Controls.Add(cbx_vehicle)
 		Controls.Add(btn_removeItem)
 		Controls.Add(btn_generate)
-		Controls.Add(btn_addItem)
 		Controls.Add(lbl_total)
 		Controls.Add(txb_total)
 		Controls.Add(lbl_date)
@@ -393,7 +370,6 @@ Partial Class transaction
 		Controls.Add(lbl_payment)
 		Controls.Add(cbx_payment)
 		Controls.Add(lsv_transaction)
-		Controls.Add(txb_search)
 		Controls.Add(lbl_store)
 		Controls.Add(cbx_stname)
 		Controls.Add(lbl_transaction)
@@ -410,14 +386,12 @@ Partial Class transaction
 	Friend WithEvents lbl_transaction As Label
 	Friend WithEvents cbx_stname As ComboBox
 	Friend WithEvents lbl_store As Label
-	Friend WithEvents txb_search As TextBox
 	Friend WithEvents lbl_payment As Label
 	Friend WithEvents cbx_payment As ComboBox
 	Friend WithEvents btn_stadd As Button
 	Friend WithEvents lbl_date As Label
 	Friend WithEvents txb_total As TextBox
 	Friend WithEvents lbl_total As Label
-	Friend WithEvents btn_addItem As Button
 	Friend WithEvents btn_generate As Button
 	Friend WithEvents btn_removeItem As Button
 	Friend WithEvents cbx_vehicle As ComboBox

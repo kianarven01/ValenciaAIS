@@ -409,5 +409,43 @@ Public Class vehicle
 		End If
 	End Sub
 
+	Private Sub txb_searchVehicle_TextChanged(sender As Object, e As EventArgs) Handles txb_searchVehicle.TextChanged
+
+		Dim connectionString = "server=localhost; user id=root; password=; database=valencia_agriculture"
+		Dim query = "SELECT * FROM vehicle WHERE vehicle_code LIKE @Keyword OR make LIKE @Keyword  OR model LIKE @Keyword  OR plate LIKE @Keyword"
+		Dim keyword = "%" & txb_searchVehicle.Text.Trim & "%"
+
+		Using connection As New MySqlConnection(connectionString)
+			Using command As New MySqlCommand(query, connection)
+				command.Parameters.AddWithValue("@Keyword", keyword)
+				connection.Open()
+
+				Using reader = command.ExecuteReader
+					Dim dt As New DataTable
+					dt.Load(reader)
+					dgv_vlist.DataSource = dt
+				End Using
+			End Using
+		End Using
+	End Sub
+
+	Private Sub txb_search_TextChanged(sender As Object, e As EventArgs) Handles txb_search.TextChanged
+		Dim connectionString = "server=localhost; user id=root; password=; database=valencia_agriculture"
+		Dim query = "SELECT * FROM product WHERE prod_name LIKE @Keyword OR productID LIKE @Keyword"
+		Dim keyword = "%" & txb_search.Text.Trim & "%"
+
+		Using connection As New MySqlConnection(connectionString)
+			Using command As New MySqlCommand(query, connection)
+				command.Parameters.AddWithValue("@Keyword", keyword)
+				connection.Open()
+
+				Using reader = command.ExecuteReader
+					Dim dt As New DataTable
+					dt.Load(reader)
+					dgv_plist.DataSource = dt
+				End Using
+			End Using
+		End Using
+	End Sub
 
 End Class
