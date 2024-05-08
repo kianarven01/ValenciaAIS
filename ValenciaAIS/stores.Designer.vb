@@ -39,7 +39,6 @@ Partial Class stores
 		Column4 = New DataGridViewTextBoxColumn()
 		Column5 = New DataGridViewTextBoxColumn()
 		txb_stbarangay = New TextBox()
-		Button1 = New Button()
 		txb_stcontact = New TextBox()
 		CType(dgv_stlist, ComponentModel.ISupportInitialize).BeginInit()
 		SuspendLayout()
@@ -208,15 +207,6 @@ Partial Class stores
 		txb_stbarangay.Size = New Size(252, 34)
 		txb_stbarangay.TabIndex = 52
 		' 
-		' Button1
-		' 
-		Button1.Location = New Point(619, 251)
-		Button1.Name = "Button1"
-		Button1.Size = New Size(37, 29)
-		Button1.TabIndex = 53
-		Button1.Text = "+"
-		Button1.UseVisualStyleBackColor = True
-		' 
 		' txb_stcontact
 		' 
 		txb_stcontact.BackColor = Color.WhiteSmoke
@@ -234,7 +224,6 @@ Partial Class stores
 		BackColor = Color.FromArgb(CByte(192), CByte(192), CByte(255))
 		ClientSize = New Size(1336, 686)
 		Controls.Add(txb_stcontact)
-		Controls.Add(Button1)
 		Controls.Add(txb_stbarangay)
 		Controls.Add(txb_search)
 		Controls.Add(txb_stname)
@@ -269,7 +258,6 @@ Partial Class stores
 	Friend WithEvents txb_pstock As TextBox
 	Friend WithEvents dgv_stlist As DataGridView
 	Friend WithEvents txb_stbarangay As TextBox
-	Friend WithEvents Button1 As Button
 	Friend WithEvents txb_stcontact As TextBox
 	Friend WithEvents Column1 As DataGridViewTextBoxColumn
 	Friend WithEvents Column2 As DataGridViewTextBoxColumn

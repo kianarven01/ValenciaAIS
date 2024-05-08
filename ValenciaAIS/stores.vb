@@ -105,20 +105,20 @@ Public Class stores
 		End Using
 	End Sub
 
-	Private Sub txb_stcontact_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txb_stcontact.KeyPress 'for numeric numbers only
+	Private Sub txb_stcontact_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txb_stcontact.KeyPress
 		If Not Char.IsControl(e.KeyChar) AndAlso Not Char.IsDigit(e.KeyChar) Then
 			e.Handled = True
 			MessageBox.Show("Please enter only numeric characters.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 		ElseIf txb_stcontact.Text.Length >= 11 AndAlso e.KeyChar <> ControlChars.Back Then
-			' If the length is already 11 and the pressed key is not the backspace key, prevent further input
+
 			e.Handled = True
 		End If
 	End Sub
 
-	Private Sub txb_stcontact_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles txb_stcontact.Validating 'for checking the length number
+	Private Sub txb_stcontact_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles txb_stcontact.Validating
 		If Not String.IsNullOrEmpty(txb_stcontact.Text) AndAlso txb_stcontact.Text.Length <> 11 Then
 			MessageBox.Show("Phone number should be 11 digits long.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-			e.Cancel = True ' Cancel the focus change
+			e.Cancel = True
 		End If
 	End Sub
 

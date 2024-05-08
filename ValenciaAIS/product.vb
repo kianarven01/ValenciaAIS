@@ -17,7 +17,7 @@ Public Class product
 	End Sub
 
 	Private Sub LoadedProductDataChangedHandler(ByVal sender As Object, ByVal e As EventArgs)
-		' Reload dgv_plist to reflect the changes
+
 		reload("SELECT * FROM product", dgv_plist)
 	End Sub
 
@@ -53,7 +53,7 @@ Public Class product
 			Return
 		End If
 
-		' Proceed with data creation
+
 		Try
 			create("INSERT INTO product (prod_name, prod_price, prod_stock, prod_stock_format) VALUES ('" & txb_pname.Text & "', '" & txb_pprice.Text & "','" & txb_pstock.Text & "', '" & cbx_pformat.Text & "') ")
 		Catch ex As Exception
@@ -115,12 +115,12 @@ Public Class product
 	End Sub
 
 	Private Sub txb_pprice_TextChanged(sender As Object, e As EventArgs) Handles txb_pprice.TextChanged
-		' Check if the entered text is numeric
+
 		If Not IsNumeric(txb_pprice.Text) AndAlso txb_pprice.Text <> "" Then
-			' If not numeric, show a message and remove the non-numeric character
+
 			MessageBox.Show("Please enter a numeric value.")
 			txb_pprice.Text = txb_pprice.Text.Substring(0, txb_pprice.Text.Length - 1)
-			' Set the cursor position to the end of the textbox
+
 			txb_pprice.SelectionStart = txb_pprice.Text.Length
 		End If
 	End Sub

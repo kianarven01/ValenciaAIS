@@ -24,10 +24,10 @@ Public Class supplier
 	End Sub
 
 	Private Sub btn_create_Click_1(sender As Object, e As EventArgs) Handles btn_create.Click
-		' Check if any of the textboxes are empty
+
 		If String.IsNullOrWhiteSpace(txb_sname.Text) OrElse String.IsNullOrWhiteSpace(txb_scontact.Text) OrElse String.IsNullOrWhiteSpace(txb_saddress.Text) Then
 			MessageBox.Show("Please fill in all fields.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-			Return ' Exit the event handler
+			Return
 		End If
 
 		Try
@@ -48,7 +48,7 @@ Public Class supplier
 	End Sub
 
 	Private Sub dgv_slist_CellClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_slist.CellClick
-		' Check if the clicked cell is in a valid row
+
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
 			Dim selectedRow = dgv_slist.Rows(e.RowIndex)
 			txb_sID.Text = selectedRow.Cells(0).Value.ToString()
@@ -93,20 +93,20 @@ Public Class supplier
 		End Using
 	End Sub
 
-	Private Sub txb_scontact_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txb_scontact.KeyPress 'for numeric numbers only
+	Private Sub txb_scontact_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txb_scontact.KeyPress
 		If Not Char.IsControl(e.KeyChar) AndAlso Not Char.IsDigit(e.KeyChar) Then
 			e.Handled = True
 			MessageBox.Show("Please enter only numeric characters.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
 		ElseIf txb_scontact.Text.Length >= 11 AndAlso e.KeyChar <> ControlChars.Back Then
-			' If the length is already 11 and the pressed key is not the backspace key, prevent further input
+
 			e.Handled = True
 		End If
 	End Sub
 
-	Private Sub txb_scontact_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles txb_scontact.Validating 'for checking the length number
+	Private Sub txb_scontact_Validating(sender As Object, e As System.ComponentModel.CancelEventArgs) Handles txb_scontact.Validating
 		If Not String.IsNullOrEmpty(txb_scontact.Text) AndAlso txb_scontact.Text.Length <> 11 Then
 			MessageBox.Show("Phone number should be 11 digits long.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-			e.Cancel = True ' Cancel the focus change
+			e.Cancel = True
 		End If
 	End Sub
 

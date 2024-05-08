@@ -1,13 +1,13 @@
 ﻿Imports System.IO
 
 Public Class Form1
-	' Create an instance of the login form
+
 	Private loginForm As New login()
 	Private WithEvents currentChildForm As Form
-	' Method to enable or disable controls based on login status
+
 	Private Sub EnableControls(ByVal enable As Boolean)
 		For Each ctrl As Control In Controls
-			If ctrl IsNot btn_logout Then ' Exclude the login button
+			If ctrl IsNot btn_logout Then
 				ctrl.Enabled = enable
 			End If
 		Next
@@ -15,14 +15,14 @@ Public Class Form1
 
 	Private Sub EnableButtonsBasedOnUserType(ByVal userType As String)
 		If userType = "superadmin" Then
-			' If user is superadmin, disable the buttons
+
 			btn_transaction.Enabled = False
 			btn_supplier.Enabled = False
 			btn_product.Enabled = False
 			btn_vehicle.Enabled = False
 			btn_stores.Enabled = False
 		Else
-			' If user is not superadmin, enable the buttons
+
 			btn_transaction.Enabled = True
 			btn_supplier.Enabled = True
 			btn_product.Enabled = True
@@ -40,7 +40,7 @@ Public Class Form1
 				If result = DialogResult.No Then
 					Return
 				Else
-					' Revert the items in the transaction list to dgv_lplist values
+
 					transactionForm.ClearItems()
 				End If
 			End If
@@ -57,23 +57,21 @@ Public Class Form1
 	End Sub
 
 
-
 	Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-		' Disable all controls initially
+
 		EnableControls(False)
 
-		' Show the login form
+
 		loginForm.ShowDialog()
 
-		' Check if login was successful before proceeding
+
 		If loginForm.LoginSuccessful Then
-			' Enable all controls if login is successful
+
 			EnableControls(True)
 
-			' Check user type
 			Dim userType As String = DBConnection.UserType
 
-			' Enable or disable buttons based on user type
+
 			EnableButtonsBasedOnUserType(userType)
 			If userType = "superadmin" Then
 				lbl_company.Text = "Superadmin Mode"
@@ -82,14 +80,14 @@ Public Class Form1
 				btn_restore.Visible = False
 			End If
 
-			' Start with transaction form if user is not superadmin
+
 			If userType <> "superadmin" Then
 				childform(transaction)
 				Dim backupManager As New DatabaseManager()
 				backupManager.BackupDatabase()
 			End If
 		Else
-			' Close the main form if login was not successful
+
 			Me.Close()
 		End If
 	End Sub
@@ -100,9 +98,9 @@ Public Class Form1
 			If transactionForm.HasUnsavedItems Then
 				Dim result As DialogResult = MessageBox.Show("There are unsaved items in the transaction. Are you sure you want to proceed?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 				If result = DialogResult.No Then
-					e.Cancel = True ' Cancel the form closing event if the user chooses not to proceed
+					e.Cancel = True
 				Else
-					' Clear the items in the transaction list and update stock
+
 					transactionForm.ClearItems()
 				End If
 			End If
@@ -128,18 +126,18 @@ Public Class Form1
 		childform(stores)
 	End Sub
 
-	' Open the login form when the button is clicked
+
 	Private Sub btn_logout_Click(sender As Object, e As EventArgs) Handles btn_logout.Click
 		Me.Close()
 		Application.Restart()
 	End Sub
 
 	Private Sub btn_restore_Click(sender As Object, e As EventArgs) Handles btn_restore.Click
-		' Prompt the user to confirm restoration
+
 		Dim result As DialogResult = MessageBox.Show("Are you sure you want to restore the database?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
 
 		If result = DialogResult.Yes Then
-			' Proceed with restoration
+
 			Dim backupFolderPath As String = Path.Combine(Application.StartupPath, "Backups")
 			Dim openFileDialog As New OpenFileDialog()
 			openFileDialog.InitialDirectory = backupFolderPath
@@ -148,10 +146,10 @@ Public Class Form1
 			openFileDialog.RestoreDirectory = True
 
 			If openFileDialog.ShowDialog() = DialogResult.OK Then
-				' Get the selected file path
+
 				Dim backupFilePath As String = openFileDialog.FileName
 
-				' Restore the database
+
 				Dim databaseManager As New DatabaseManager()
 				databaseManager.RestoreDatabase(backupFilePath)
 			End If

@@ -1,41 +1,41 @@
 ﻿Imports MySql.Data.MySqlClient
 
 Public Class login
-    ' Public property to indicate login status
+
     Public Property LoginSuccessful As Boolean
 
-    ' Set the AcceptButton property to the login button
+
     Private Sub login_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.AcceptButton = btn_login
-        ' Add items to the combobox
+
         cbx_privilege.Items.AddRange({"admin", "user"})
-        ' Set default selection to "user"
+
         cbx_privilege.SelectedItem = "user"
     End Sub
 
     Private Sub btn_login_Click(sender As Object, e As EventArgs) Handles btn_login.Click
-        ' Check if textboxes are empty
+
         If String.IsNullOrWhiteSpace(txb_username.Text) OrElse String.IsNullOrWhiteSpace(txb_password.Text) Then
             MessageBox.Show("Username and password are required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
-        ' Check if the username and password match the superadmin credentials
+
         If txb_username.Text.ToLower() = "superadmin" AndAlso txb_password.Text.ToLower() = "helloworld" Then
-            ' Set UserType to "superadmin"
+
             DBConnection.UserType = "superadmin"
-            ' Set LoginSuccessful property to True
+
             LoginSuccessful = True
-            ' Close the login form
+
             Me.Close()
-            ' Show a message indicating successful login
+
             MessageBox.Show("Logged in as superadmin.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Return
         End If
 
         Dim hashedPassword As String = PasswordHasher.HashPassword(txb_password.Text)
 
-        ' Your login code for other users here
+
         Dim sql As String = "SELECT * FROM user WHERE username = @username AND password = @password AND user_type = @userType"
         Using connection As MySqlConnection = DBConnection.strconnection()
             Using adapter As New MySqlDataAdapter(sql, connection)
@@ -47,22 +47,21 @@ Public Class login
                     connection.Open()
                     adapter.Fill(dt)
                     If dt.Rows.Count > 0 Then
-                        ' Retrieve user type from the database
+
                         Dim userType As String = dt.Rows(0)("user_type").ToString()
-                        ' Store user type in the DBConnection module
+
                         DBConnection.UserType = userType
 
-                        ' Login successful
                         MessageBox.Show("Login successful", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                        ' Set LoginSuccessful property to True
+
                         LoginSuccessful = True
-                        ' Close the login form
+
                         Me.Close()
                     Else
-                        ' Login failed
+
                         MessageBox.Show("Invalid username, password, or user type", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End If
-                Catch ex As MySqlException When ex.Number = 1049 ' MySQL error number for unknown database
+                Catch ex As MySqlException When ex.Number = 1049
                     MessageBox.Show("Database not found. Please login as superadmin.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Catch ex As Exception
                     MessageBox.Show(ex.Message)
@@ -73,9 +72,9 @@ Public Class login
 
 
     Private Sub btn_cancel_Click(sender As Object, e As EventArgs) Handles btn_cancel.Click
-        ' Set LoginSuccessful property to False
+
         LoginSuccessful = False
-        ' Close the login form
+
         Me.Close()
     End Sub
 

@@ -24,7 +24,7 @@ Public Class vehicle
 		EnableVehicleDetails(False)
 		EnableVehicleDetails(DBConnection.UserType = "admin")
 		LoadVehicleCodes()
-		' Load data into dgv_plist from product table
+
 		reload("SELECT vehicle_code, make, model, plate FROM vehicle", dgv_vlist)
 		reload("SELECT * FROM product", dgv_plist)
 		InitializeLoadedProductDataGridView()
@@ -43,7 +43,7 @@ Public Class vehicle
 
 	Private Sub vehicle_VisibleChanged(sender As Object, e As EventArgs) Handles MyBase.VisibleChanged
 		If Me.Visible Then
-			' Clear the fields when the form becomes visible
+
 			ClearFields()
 			dgv_lplist.DataSource = Nothing
 		End If
@@ -53,7 +53,7 @@ Public Class vehicle
 
 
 	Private Sub ProductDataChangedHandler(ByVal sender As Object, ByVal e As EventArgs)
-		' Reload dgv_plist and dgv_lplist to reflect the changes
+
 		reload("SELECT * FROM product", dgv_plist)
 		reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 	End Sub
@@ -61,37 +61,37 @@ Public Class vehicle
 
 	Private Sub dgv_plist_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgv_plist.CellDoubleClick
 		If e.RowIndex >= 0 AndAlso e.ColumnIndex >= 0 Then
-			' Get the selected product details from dgv_plist
+
 			Dim selectedRow = dgv_plist.Rows(e.RowIndex)
 			Dim productId = Convert.ToInt32(selectedRow.Cells(0).Value)
 			Dim productName = Convert.ToString(selectedRow.Cells(1).Value)
 			Dim productPrice = Convert.ToDecimal(selectedRow.Cells(2).Value)
 			Dim productStockFormat = Convert.ToString(selectedRow.Cells(4).Value)
 
-			' Check if a vehicle is selected in the ComboBox
+
 			If cbx_vehicle.SelectedItem Is Nothing Then
 				MessageBox.Show("Please select a vehicle first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
 				Return
 			End If
 
-			' Prompt the user to enter the quantity
+
 			Dim quantityForm As New QuantityInputForm
 			If quantityForm.ShowDialog = DialogResult.OK Then
-				' Get the quantity entered by the user
+
 				Dim quantity = quantityForm.Quantity
 
-				' Deduct the quantity from prod_stock in the product table
+
 				Dim queryDeductStock = $"UPDATE product SET prod_stock = prod_stock - {quantity} WHERE productID = {productId}"
 				ExecuteNonQueryWithoutPrompt(queryDeductStock)
 
-				' Associate the loaded product with the selected vehicle
+
 				Dim selectedVehicleCode As String = cbx_vehicle.SelectedItem.ToString()
 				AssociateProductWithVehicle(productId, selectedVehicleCode, quantity)
 
-				' Reload dgv_plist and dgv_lplist to reflect the changes
+
 				reload("SELECT * FROM product", dgv_plist)
 
-				' Trigger the selected index changed event of cbx_vehicle to reload dgv_lplist
+
 				cbx_vehicle_SelectedIndexChanged(cbx_vehicle, EventArgs.Empty)
 			End If
 		End If
@@ -99,7 +99,7 @@ Public Class vehicle
 
 
 	Public Sub AssociateProductWithVehicle(productId As Integer, vehicleCode As String, quantity As Double)
-		' Check if the product already exists in loaded_product
+
 		Dim queryCheckExistingProduct = $"SELECT COUNT(*) FROM loaded_product WHERE productID = {productId} AND vehicle_code = '{vehicleCode}'"
 		Dim existingProductCount = 0
 		Try
@@ -113,7 +113,7 @@ Public Class vehicle
 			strcon.Close()
 		End Try
 
-		' If the product already exists for the selected vehicle, update the loaded_stock, otherwise insert a new record
+
 		If existingProductCount > 0 Then
 			Dim queryUpdateLoadedStock = $"UPDATE loaded_product SET loaded_stock = loaded_stock + {quantity} WHERE productID = {productId} AND vehicle_code = '{vehicleCode}'"
 			ExecuteNonQueryWithoutPrompt(queryUpdateLoadedStock)
@@ -126,7 +126,7 @@ Public Class vehicle
 
 
 	Private Function GetProductIdByName(ByVal productName As String) As Integer
-		Dim productId As Integer = -1 ' Default value if product is not found
+		Dim productId As Integer = -1
 		Try
 			strcon.Open()
 			cmd.Connection = strcon
@@ -150,28 +150,28 @@ Public Class vehicle
 			Dim selectedRow = dgv_lplist.Rows(rowIndex)
 			Dim loadedProductId As Integer = Convert.ToInt32(selectedRow.Cells("loaded_productID").Value)
 			Dim productName As String = Convert.ToString(selectedRow.Cells("prod_name").Value)
-			Dim loadedStock As Decimal = Convert.ToDecimal(selectedRow.Cells("loaded_stock").Value) ' Use Decimal data type
+			Dim loadedStock As Decimal = Convert.ToDecimal(selectedRow.Cells("loaded_stock").Value)
 
-			' Fetch the productId based on the selected product name
+
 			Dim productId As Integer = GetProductIdByName(productName)
 
 			If productId <> -1 Then
-				' Remove the item from loaded_product table
+
 				Dim queryRemoveItem As String = $"DELETE FROM loaded_product WHERE loaded_productID = {loadedProductId}"
 				ExecuteNonQueryWithoutPrompt(queryRemoveItem)
 
-				' Update the product stock by adding the removed quantity
+
 				Dim queryAddStock As String = $"UPDATE product SET prod_stock = prod_stock + {loadedStock} WHERE productID = {productId}" ' Add loaded stock back to product stock
 				ExecuteNonQueryWithoutPrompt(queryAddStock)
 
-				' Raise the LoadedProductDataChanged event to trigger reload
+
 				RaiseEvent LoadedProductDataChanged(Me, EventArgs.Empty)
 
-				' Reload dgv_lplist and dgv_plist to reflect the changes
+
 				reload("SELECT lp.loaded_productID, p.prod_name, p.prod_price, lp.loaded_stock, p.prod_stock_format FROM loaded_product lp INNER JOIN product p ON lp.productID = p.productID", dgv_lplist)
 				reload("SELECT * FROM product", dgv_plist)
 
-				' Refresh the ComboBox to reload the associated loaded products
+
 				cbx_vehicle_SelectedIndexChanged(cbx_vehicle, EventArgs.Empty)
 
 				MessageBox.Show("Item removed successfully and stock updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information)

@@ -71,6 +71,7 @@ Partial Class transaction
 		' 
 		' cbx_stname
 		' 
+		cbx_stname.DropDownStyle = ComboBoxStyle.DropDownList
 		cbx_stname.FormattingEnabled = True
 		cbx_stname.Location = New Point(170, 100)
 		cbx_stname.Name = "cbx_stname"
@@ -101,6 +102,7 @@ Partial Class transaction
 		' 
 		' cbx_payment
 		' 
+		cbx_payment.DropDownStyle = ComboBoxStyle.DropDownList
 		cbx_payment.FormattingEnabled = True
 		cbx_payment.Items.AddRange(New Object() {"Cash", "Gcash"})
 		cbx_payment.Location = New Point(170, 145)
